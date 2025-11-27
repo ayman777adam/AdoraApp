@@ -6,35 +6,35 @@
     <title>تقرير إشغال فندق أبيلا</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
-        /* --- 1. المتغيرات --- */
+        /* --- 1. Variables --- */
         :root {
-            --bg-body-dark: #1e1e1e;
+            --bg-body: #f9f4e8;
             --bg-card: #ffffff;
             --text-main: #2d3436;
             --text-sec: #636e72;
             --border-color: #dfe6e9;
-            --input-bg: #f1f2f6;
             --primary: #0984e3;
             --success: #00b894;
             --danger: #d63031;
-            --warning: #fdcb6e;
+            --warning: #f1c40f;
             --upgrade: #6c5ce7;
-            --shadow: 0 10px 20px rgba(0,0,0,0.05);
             --gold-line: rgba(184, 134, 11, 0.15);
+            
+            --color-single: #0984e3; 
+            --color-suite: #b7950b; 
         }
 
         body.dark-mode {
+            --bg-body: #1e1e1e;
             --bg-card: #2d2d2d;
             --text-main: #dfe6e9;
             --text-sec: #b2bec3;
             --border-color: #444;
-            --input-bg: #3a3a3a;
-            --shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
         body {
             font-family: 'Tajawal', sans-serif;
-            background-color: #f9f4e8;
+            background-color: var(--bg-body);
             background-image: 
                 linear-gradient(45deg, var(--gold-line) 1px, transparent 1px),
                 linear-gradient(-45deg, var(--gold-line) 1px, transparent 1px);
@@ -42,113 +42,131 @@
             background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
-            padding: 15px 15px 60px 15px; /* مساحة للفوتر الصغير */
-            transition: background-color 0.3s, color 0.3s;
+            padding: 15px 15px 200px 15px; /* مساحة كبيرة للفوتر الثابت */
             -webkit-tap-highlight-color: transparent;
+            transition: 0.3s;
         }
 
-        body.dark-mode {
-            background-color: var(--bg-body-dark);
-            background-image: none;
-        }
+        body.dark-mode { background-image: none; }
 
         .container { max-width: 500px; margin: 0 auto; }
 
-        /* --- 2. الهيدر الزجاجي (الجديد) --- */
+        /* --- 2. Glass Header --- */
         .header-glass {
-            background: rgba(255, 255, 255, 0.6); /* شفافية */
-            backdrop-filter: blur(12px); /* تأثير الزجاج */
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
             border-radius: 20px;
-            padding: 15px 20px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        }
-        
-        body.dark-mode .header-glass {
-            background: rgba(45, 45, 45, 0.7);
-            border-color: rgba(255,255,255,0.1);
-        }
-
-        .header-title h1 { margin: 0; font-size: 1.2rem; color: var(--primary); font-weight: 800; }
-        
-        .tools-btn {
-            background: rgba(255,255,255,0.5);
-            border: 1px solid var(--border-color);
-            padding: 6px 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: 0.2s;
-        }
-        .tools-btn:hover { background: #fff; transform: scale(1.05); }
-
-        /* --- Dashboard --- */
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-        .card { background: var(--bg-card); border-radius: 16px; padding: 15px; position: relative; box-shadow: var(--shadow); border-bottom: 4px solid transparent; transition: transform 0.2s; }
-        .card:active { transform: scale(0.98); }
-        .card-header { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-sec); margin-bottom: 5px; }
-        .info-icon { cursor: pointer; opacity: 0.6; }
-        .card-value { font-size: 2rem; font-weight: 800; display: block; line-height: 1; }
-        .card-sub { font-size: 0.7rem; opacity: 0.7; margin-top: 5px; display: block; }
-        .upgrade-badge { font-size: 0.8rem; background-color: var(--upgrade); color: white; padding: 2px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; margin-top: 5px; display: none; }
-        .card.stat-ok { border-color: var(--success); color: var(--success); }
-        .card.stat-warn { border-color: var(--warning); color: #e1b12c; }
-        .card.stat-danger { border-color: var(--danger); color: var(--danger); }
-
-        /* --- Form --- */
-        .section { background: var(--bg-card); border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); }
-        .sec-title { font-weight: 700; color: var(--primary); margin-bottom: 15px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; font-size: 1rem; }
-        .input-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
-        .input-group { flex: 1; position: relative; min-width: 120px; }
-        .input-group label { display: block; font-size: 0.8rem; color: var(--text-sec); margin-bottom: 5px; white-space: nowrap; }
-        .input-group input { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid transparent; background-color: var(--input-bg); color: var(--text-main); font-size: 1.2rem; font-weight: bold; text-align: center; box-sizing: border-box; transition: all 0.3s; -moz-appearance: textfield; }
-        .input-group input:focus { outline: none; background-color: var(--bg-card); border-color: var(--primary); box-shadow: 0 0 0 4px rgba(9, 132, 227, 0.15); }
-        .input-group.error input { border-color: var(--danger); background-color: rgba(214, 48, 49, 0.1); }
-        .error-msg { color: var(--danger); font-size: 0.7rem; position: absolute; bottom: -18px; right: 0; display: none; }
-        .input-group.error .error-msg { display: block; }
-
-        /* --- Advice & Alerts --- */
-        .advice-display-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
             padding: 15px;
-            margin-top: 20px;
-            text-align: center;
-            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .advice-line { padding: 8px; margin: 5px 0; border-radius: 8px; font-weight: 700; font-size: 1rem; }
-        .adv-green { background: rgba(0, 184, 148, 0.1); color: var(--success); }
-        .adv-red { background: rgba(214, 48, 49, 0.1); color: var(--danger); }
-        .alert-box { padding: 15px; border-radius: 12px; margin-top: 15px; text-align: center; font-size: 0.95rem; display: none; }
-        .alert-upgrade { background-color: rgba(108, 92, 231, 0.1); color: var(--upgrade); border: 1px solid var(--upgrade); display: block; }
+        body.dark-mode .header-glass { background: rgba(45,45,45,0.7); border-color:rgba(255,255,255,0.1); }
+        .header-title h1 { margin: 0; font-size: 1.1rem; color: var(--primary); font-weight: 800; }
+        .tools-btn { background: rgba(255,255,255,0.5); border: 1px solid var(--border-color); padding: 8px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
 
-        #submit-btn { width: 100%; padding: 16px; border: none; border-radius: 16px; font-size: 1.1rem; font-weight: 800; color: white; background: linear-gradient(135deg, #00b894, #00cec9); cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3); transition: filter 0.3s; }
-        #submit-btn:disabled { background: #b2bec3; cursor: not-allowed; box-shadow: none; }
-
-        /* --- Footer (Minimalist) --- */
-        .dev-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: var(--bg-card);
-            padding: 10px;
-            text-align: center;
-            font-size: 0.75rem; /* خط صغير */
-            color: var(--text-sec);
-            border-top: 1px solid var(--border-color);
-            z-index: 100;
-            white-space: nowrap;
+        /* --- 3. Dashboard --- */
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .card { 
+            background: var(--bg-card); border-radius: 18px; padding: 15px; 
+            position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-bottom: 4px solid transparent; transition: transform 0.2s;
         }
+        .card:active { transform: scale(0.98); }
+        
+        .chart-container { position: relative; width: 80px; height: 80px; margin-bottom: 10px; }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: var(--border-color); stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; transition: stroke-dasharray 0.6s ease; }
+        .percentage { fill: var(--text-main); font-family: 'Tajawal', sans-serif; font-weight: bold; font-size: 0.5em; text-anchor: middle; }
+        
+        .card-label { font-size: 0.85rem; font-weight: 700; margin-bottom: 2px; }
+        .card-sub { font-size: 0.7rem; opacity: 0.7; }
+        .c-single .circle { stroke: var(--color-single); } .c-single .card-label { color: var(--color-single); }
+        .c-suite .circle { stroke: var(--color-suite); } .c-suite .card-label { color: var(--color-suite); }
+        
+        .upgrade-badge { font-size: 0.7rem; background-color: var(--upgrade); color: white; padding: 2px 6px; border-radius: 8px; margin-top: 5px; display: none; }
 
-        /* --- Modal --- */
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        /* --- 4. Inputs & Steppers --- */
+        .section { background: var(--bg-card); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .sec-title { font-weight: 700; font-size: 1rem; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); }
+        
+        .control-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .control-label { flex: 1; font-size: 0.9rem; font-weight: 600; color: var(--text-sec); }
+        .control-label span { display: block; font-size: 1.2rem; margin-right: 5px; float: right;}
+        
+        .stepper { display: flex; align-items: center; gap: 10px; background: var(--bg-body); padding: 5px; border-radius: 12px; }
+        .step-btn {
+            width: 40px; height: 40px; border: none; border-radius: 10px;
+            font-size: 1.2rem; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.1s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .step-btn:active { transform: scale(0.9); }
+        .btn-minus { background: #fff; color: var(--danger); }
+        .btn-plus { background: #fff; color: var(--success); }
+        body.dark-mode .step-btn { background: #444; }
+        
+        .val-display { font-size: 1.3rem; font-weight: 800; width: 30px; text-align: center; transition: transform 0.1s; }
+        .pop-anim { transform: scale(1.3); color: var(--primary); }
+
+        .cap-bar-bg { height: 4px; background: var(--border-color); border-radius: 2px; margin-top: 5px; width: 100%; position: relative; overflow: hidden; }
+        .cap-bar-fill { height: 100%; width: 0%; background: var(--success); transition: width 0.3s, background 0.3s; }
+        .lbl-single { color: var(--color-single); } .lbl-suite { color: var(--color-suite); }
+
+        /* --- 5. Sticky Bottom Bar (Updated) --- */
+        .sticky-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(0,0,0,0.1);
+            padding: 15px 15px 5px 15px; /* Padding bottom reduced */
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            z-index: 999;
+            display: flex; flex-direction: column; gap: 8px;
+            box-sizing: border-box;
+            border-radius: 20px 20px 0 0;
+        }
+        body.dark-mode .sticky-footer { background: rgba(35,35,35,0.98); border-color: #555; }
+
+        .advice-container { display: flex; gap: 10px; }
+        .advice-pill {
+            flex: 1; padding: 10px; border-radius: 12px; text-align: center;
+            font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 5px;
+            transition: 0.3s;
+        }
+        .pill-green { background: rgba(0, 184, 148, 0.15); color: var(--success); border: 1px solid rgba(0, 184, 148, 0.3); }
+        .pill-red { background: rgba(214, 48, 49, 0.15); color: var(--danger); border: 1px solid rgba(214, 48, 49, 0.3); }
+
+        .actions-row { display: flex; gap: 10px; }
+        
+        #submit-btn {
+            flex: 1; padding: 14px; border: none; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), #0984e3);
+            color: white; font-weight: 800; font-size: 1.1rem;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(9, 132, 227, 0.3);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        #copy-btn {
+            width: 50px; border: none; border-radius: 12px;
+            background: var(--input-bg); color: var(--text-sec);
+            font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Footer Credits Inside Sticky */
+        .footer-credits {
+            text-align: center; font-size: 0.7rem; color: #b2bec3;
+            padding-top: 5px; padding-bottom: 5px;
+            border-top: 1px dashed rgba(0,0,0,0.05);
+            margin-top: 5px;
+        }
+        .footer-credits b { color: var(--text-sec); }
+
+        .alert-upgrade { background: rgba(108, 92, 231, 0.1); color: var(--upgrade); padding: 10px; border-radius: 10px; border: 1px solid var(--upgrade); text-align: center; font-size: 0.9rem; margin-bottom: 15px; display: none; }
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 2000; }
         .modal-content { background: var(--bg-card); padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; text-align: center; }
         .math-row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
     </style>
@@ -156,349 +174,241 @@
 <body>
 
     <div class="container">
-        
         <div class="header-glass">
             <div class="header-title">
                 <h1>تقرير إشغال فندق أبيلا</h1>
             </div>
             <div style="display:flex; gap:8px;">
-                <button class="tools-btn" onclick="toggleDarkMode()" title="الوضع الليلي">🌙</button>
-                <button class="tools-btn" onclick="resetData()" title="مسح البيانات">🔄</button>
+                <button class="tools-btn" onclick="toggleDarkMode()">🌙</button>
+                <button class="tools-btn" onclick="resetData()">🔄</button>
             </div>
         </div>
 
         <div class="dashboard">
-            <div class="card" id="card-single">
-                <div class="card-header">
-                    <span>متاح للبيع (مفرد)</span>
-                    <span class="info-icon" onclick="showExplain('single')">❓</span>
+            <div class="card c-single" id="card-single" onclick="showExplain('single')">
+                <div class="chart-container">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" id="circle-s" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="percentage" id="txt-s">0</text>
+                    </svg>
                 </div>
-                <span class="card-value" id="val-single">0</span>
-                <small class="card-sub">سعة: 4</small>
+                <div class="card-label">مفرد متاح</div>
+                <div class="card-sub">سعة: 4</div>
             </div>
 
-            <div class="card" id="card-suite">
-                <div class="card-header">
-                    <span>متاح للبيع (غرفة وصالة)</span>
-                    <span class="info-icon" onclick="showExplain('suite')">❓</span>
+            <div class="card c-suite" id="card-suite" onclick="showExplain('suite')">
+                <div class="chart-container">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" id="circle-r" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="percentage" id="txt-r">0</text>
+                    </svg>
                 </div>
-                <span class="card-value" id="val-suite">0</span>
-                <small class="card-sub">سعة: 20</small>
-                <div id="upgrade-badge" class="upgrade-badge">
-                    ⚡ ترقية نشطة: <span id="upgrade-count">0</span>
+                <div class="card-label">وصالة متاح</div>
+                <div class="card-sub">سعة: 20</div>
+                <div id="upgrade-badge" class="upgrade-badge">⚡ ترقية: 0</div>
+            </div>
+        </div>
+
+        <div id="upgrade-alert" class="alert-upgrade">
+            🚀 انتبه: تم خصم <b id="alert-upg-cnt">0</b> من الوصالة لترقية المفرد
+        </div>
+
+        <div class="section">
+            <div class="sec-title">🏨 الإشغال الحالي</div>
+            
+            <div class="control-row">
+                <div class="control-label lbl-single"><span>🛏️</span> مجدد (مفرد)</div>
+                <div class="stepper">
+                    <button class="step-btn btn-minus" onclick="changeVal('stayS', -1, 4)">−</button>
+                    <span class="val-display" id="disp-stayS">0</span>
+                    <button class="step-btn btn-plus" onclick="changeVal('stayS', 1, 4)">+</button>
+                </div>
+            </div>
+            <div class="cap-bar-bg"><div class="cap-bar-fill" id="bar-stayS"></div></div>
+            
+            <hr style="border:0; border-top:1px dashed #eee; margin:15px 0;">
+
+            <div class="control-row">
+                <div class="control-label lbl-suite"><span>🛋️</span> مجدد (وصالة)</div>
+                <div class="stepper">
+                    <button class="step-btn btn-minus" onclick="changeVal('stayR', -1, 20)">−</button>
+                    <span class="val-display" id="disp-stayR">0</span>
+                    <button class="step-btn btn-plus" onclick="changeVal('stayR', 1, 20)">+</button>
+                </div>
+            </div>
+            <div class="cap-bar-bg"><div class="cap-bar-fill" id="bar-stayR"></div></div>
+        </div>
+
+        <div class="section">
+            <div class="sec-title">🚪 محتمل خروج (50%)</div>
+            <div class="control-row">
+                <div class="control-label lbl-single"><span>🚪</span> خروج (مفرد)</div>
+                <div class="stepper">
+                    <button class="step-btn btn-minus" onclick="changeVal('potS', -1, 4)">−</button>
+                    <span class="val-display" id="disp-potS">0</span>
+                    <button class="step-btn btn-plus" onclick="changeVal('potS', 1, 4)">+</button>
+                </div>
+            </div>
+            <div class="control-row" style="margin-top:15px;">
+                <div class="control-label lbl-suite"><span>🚪</span> خروج (وصالة)</div>
+                <div class="stepper">
+                    <button class="step-btn btn-minus" onclick="changeVal('potR', -1, 20)">−</button>
+                    <span class="val-display" id="disp-potR">0</span>
+                    <button class="step-btn btn-plus" onclick="changeVal('potR', 1, 20)">+</button>
                 </div>
             </div>
         </div>
 
-        <form id="main-form">
-            <div class="section">
-                <div class="sec-title">🏨 الإشغال الحالي</div>
-                <div class="input-row">
-                    <div class="input-group" id="grp-stay-s">
-                        <label>مجدد/باقي (مفرد)</label>
-                        <input type="number" id="stay-s" placeholder="-" onfocus="this.select()">
-                        <span class="error-msg">تجاوز السعة!</span>
-                    </div>
-                    <div class="input-group" id="grp-stay-r">
-                        <label>مجدد/باقي (غرفة وصالة)</label>
-                        <input type="number" id="stay-r" placeholder="-" onfocus="this.select()">
-                        <span class="error-msg">تجاوز السعة!</span>
-                    </div>
-                </div>
-                <div class="input-row">
-                    <div class="input-group" id="grp-pot-s">
-                        <label>محتمل خروج (مفرد)</label>
-                        <input type="number" id="pot-s" placeholder="-" onfocus="this.select()">
-                        <div style="font-size:0.6rem; color:var(--text-sec); margin-top:2px;">المخاطرة: 50%</div>
-                    </div>
-                    <div class="input-group" id="grp-pot-r">
-                        <label>محتمل خروج (غرفة وصالة)</label>
-                        <input type="number" id="pot-r" placeholder="-" onfocus="this.select()">
-                        <div style="font-size:0.6rem; color:var(--text-sec); margin-top:2px;">المخاطرة: 50%</div>
-                    </div>
+        <div class="section">
+            <div class="sec-title">📅 الحجوزات القادمة</div>
+            <div class="control-row">
+                <div class="control-label">بوكينج (مفرد)</div>
+                <div class="stepper">
+                    <button class="step-btn btn-minus" onclick="changeVal('bkS', -1, 100)">−</button>
+                    <span class="val-display" id="disp-bkS">0</span>
+                    <button class="step-btn btn-plus" onclick="changeVal('bkS', 1, 100)">+</button>
                 </div>
             </div>
-
-            <div class="section">
-                <div class="sec-title">📅 الحجوزات القادمة (مؤكد)</div>
-                <div class="input-row">
-                    <div class="input-group">
-                        <label>بوكينج (مفرد)</label>
-                        <input type="number" id="bk-s" placeholder="-" onfocus="this.select()">
-                    </div>
-                    <div class="input-group">
-                        <label>استقبال (مفرد)</label>
-                        <input type="number" id="rec-s" placeholder="-" onfocus="this.select()">
-                    </div>
-                </div>
-                <div class="input-row">
-                    <div class="input-group">
-                        <label>بوكينج (غرفة وصالة)</label>
-                        <input type="number" id="bk-r" placeholder="-" onfocus="this.select()">
-                    </div>
-                    <div class="input-group">
-                        <label>استقبال (غرفة وصالة)</label>
-                        <input type="number" id="rec-r" placeholder="-" onfocus="this.select()">
-                    </div>
+            <div class="control-row">
+                <div class="control-label">استقبال (مفرد)</div>
+                <div class="stepper">
+                    <button class="step-btn btn-minus" onclick="changeVal('recS', -1, 100)">−</button>
+                    <span class="val-display" id="disp-recS">0</span>
+                    <button class="step-btn btn-plus" onclick="changeVal('recS', 1, 100)">+</button>
                 </div>
             </div>
-
-            <div id="upgrade-alert" class="alert-box alert-upgrade" style="display:none;">
-                <b>🚀 انتبه! يوجد عجز في المفرد</b><br>
-                قمنا بترقية <span id="alert-upg-count" style="font-weight:800; font-size:1.2rem;">0</span> حجز إلى غرفة وصالة.
+            <hr style="border:0; border-top:1px dashed #eee; margin:15px 0;">
+            <div class="control-row">
+                <div class="control-label">بوكينج (وصالة)</div>
+                <div class="stepper">
+                    <button class="step-btn btn-minus" onclick="changeVal('bkR', -1, 100)">−</button>
+                    <span class="val-display" id="disp-bkR">0</span>
+                    <button class="step-btn btn-plus" onclick="changeVal('bkR', 1, 100)">+</button>
+                </div>
             </div>
-
-            <div id="final-advice-display" class="advice-display-box"></div>
-
-            <button type="button" id="submit-btn" onclick="sendWhatsApp()">
-                إرسال التقرير (WhatsApp) 📤
-            </button>
-        </form>
+            <div class="control-row">
+                <div class="control-label">استقبال (وصالة)</div>
+                <div class="stepper">
+                    <button class="step-btn btn-minus" onclick="changeVal('recR', -1, 100)">−</button>
+                    <span class="val-display" id="disp-recR">0</span>
+                    <button class="step-btn btn-plus" onclick="changeVal('recR', 1, 100)">+</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="dev-footer">
-        تطوير: ايمن ابو ورده | 77aayy@gmail.com
+    <div class="sticky-footer">
+        <div class="advice-container">
+            <div id="adv-single" class="advice-pill pill-green">مفرد: 0</div>
+            <div id="adv-suite" class="advice-pill pill-green">وصالة: 0</div>
+        </div>
+        
+        <div class="actions-row">
+            <button id="submit-btn" onclick="sendWhatsApp()">إرسال واتساب 🚀</button>
+            <button id="copy-btn" onclick="copyText()" title="نسخ النص">📋</button>
+        </div>
+
+        <div class="footer-credits">
+            تطوير: <b>ايمن ابو ورده</b> | 77aayy@gmail.com
+        </div>
     </div>
 
     <div id="explain-modal" class="modal-overlay" onclick="closeExplain()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 style="color:var(--primary); margin-top:0;">كيف تم الحساب؟</h3>
+            <h3 style="color:var(--primary); margin-top:0;">تفاصيل الحساب</h3>
             <div id="math-content"></div>
-            <button onclick="closeExplain()" style="margin-top:15px; background:none; border:1px solid #ccc; padding:5px 15px; border-radius:8px;">إغلاق</button>
+            <button onclick="closeExplain()" style="margin-top:15px; width:100%; padding:10px; border:none; background:#eee; border-radius:10px;">إغلاق</button>
         </div>
     </div>
 
     <script>
-        // --- الثوابت ---
-        const CAP_S = 4;
-        const CAP_R = 20;
-        const RISK_S = 0.5; 
-        const RISK_R = 0.5; 
+        const CAP_S = 4, CAP_R = 20; const RISK = 0.5;
+        let s = { stayS:0, stayR:0, potS:0, potR:0, bkS:0, bkR:0, recS:0, recR:0 };
+        let calc = {};
 
-        let state = { stayS:0, stayR:0, potS:0, potR:0, bkS:0, recS:0, bkR:0, recR:0 };
+        window.onload = () => { loadData(); checkTheme(); updateUI(); };
 
-        window.onload = function() {
-            loadData();
-            checkDarkMode();
-            setupListeners();
-            setupSmartFocus();
-            calculateAll();
-        };
-
-        function setupListeners() {
-            document.querySelectorAll('input[type="number"]').forEach(input => {
-                input.addEventListener('input', () => { saveData(); calculateAll(); });
-            });
+        function changeVal(key, amount, maxCap) {
+            let val = s[key] + amount;
+            if (val < 0) val = 0;
+            if (['stayS','potS'].includes(key) && (s.stayS + s.potS + amount > CAP_S)) { vibrate(50); return; }
+            if (['stayR','potR'].includes(key) && (s.stayR + s.potR + amount > CAP_R)) { vibrate(50); return; }
+            s[key] = val;
+            vibrate(10); 
+            // Trigger Animation
+            const el = document.getElementById('disp-'+key);
+            el.classList.remove('pop-anim');
+            void el.offsetWidth; // Trigger reflow
+            el.classList.add('pop-anim');
+            saveData(); updateUI();
         }
 
-        function setupSmartFocus() {
-            const inputs = Array.from(document.querySelectorAll('input[type="number"]'));
-            inputs.forEach((input, index) => {
-                input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        const nextInput = inputs[index + 1];
-                        if (nextInput) nextInput.focus();
-                        else document.getElementById('submit-btn').focus();
-                    }
-                });
-            });
-        }
-
-        // --- الحسابات والمنطق ---
-        function calculateAll() {
-            state.stayS = Number(document.getElementById('stay-s').value) || 0;
-            state.stayR = Number(document.getElementById('stay-r').value) || 0;
-            state.potS = Number(document.getElementById('pot-s').value) || 0;
-            state.potR = Number(document.getElementById('pot-r').value) || 0;
-            state.bkS = Number(document.getElementById('bk-s').value) || 0;
-            state.recS = Number(document.getElementById('rec-s').value) || 0;
-            state.bkR = Number(document.getElementById('bk-r').value) || 0;
-            state.recR = Number(document.getElementById('rec-r').value) || 0;
-
-            const validS = validateInput(state.stayS + state.potS, CAP_S, 'grp-stay-s', 'grp-pot-s');
-            const validR = validateInput(state.stayR + state.potR, CAP_R, 'grp-stay-r', 'grp-pot-r');
-            
-            const btn = document.getElementById('submit-btn');
-            const adviceDiv = document.getElementById('final-advice-display');
-
-            if (!validS || !validR) {
-                btn.disabled = true;
-                btn.innerText = "❌ صحح الأرقام (تجاوز السعة)";
-                adviceDiv.innerHTML = "<span style='color:var(--danger)'>يرجى تصحيح الأرقام أولاً</span>";
-                return;
-            } else {
-                btn.disabled = false;
-                btn.innerText = "إرسال التقرير (WhatsApp) 📤";
-            }
-
-            // حساب المخاطرة
-            const gainedS = Math.floor(state.potS * RISK_S);
-            const gainedR = Math.floor(state.potR * RISK_R);
-
-            // الصافي الأولي
-            const physicalS = CAP_S - (state.stayS + state.potS);
-            const netS = (physicalS + gainedS) - (state.bkS + state.recS);
-
-            const physicalR = CAP_R - (state.stayR + state.potR);
-            const netR = (physicalR + gainedR) - (state.bkR + state.recR);
-
-            // منطق الترقية
-            let finalS = netS;
-            let finalR = netR;
-            let upgradeCount = 0;
-
-            if (netS < 0 && netR > 0) {
-                const deficit = Math.abs(netS);
-                upgradeCount = Math.min(deficit, netR);
-                finalS = netS + upgradeCount;
-                finalR = netR - upgradeCount;
-            }
-
-            // تحديث الكروت
-            updateCard('card-single', 'val-single', finalS);
-            updateCard('card-suite', 'val-suite', finalR);
-
+        function updateUI() {
+            for (let k in s) { const el = document.getElementById('disp-'+k); if(el) el.innerText = s[k]; }
+            updateBar('bar-stayS', s.stayS, CAP_S); updateBar('bar-stayR', s.stayR, CAP_R);
+            const gainS = Math.floor(s.potS * RISK); const gainR = Math.floor(s.potR * RISK);
+            let netS = (CAP_S - (s.stayS + s.potS) + gainS) - (s.bkS + s.recS);
+            let netR = (CAP_R - (s.stayR + s.potR) + gainR) - (s.bkR + s.recR);
+            let upg = 0; if (netS < 0 && netR > 0) { upg = Math.min(Math.abs(netS), netR); netS += upg; netR -= upg; }
+            calc = { netS, netR, upg, gainS, gainR };
+            updateChart('circle-s', 'txt-s', netS, CAP_S, '#card-single', 'c-single');
+            updateChart('circle-r', 'txt-r', netR, CAP_R, '#card-suite', 'c-suite');
+            const alert = document.getElementById('upgrade-alert');
             const badge = document.getElementById('upgrade-badge');
-            const alertBox = document.getElementById('upgrade-alert');
-            
-            if (upgradeCount > 0) {
-                badge.style.display = 'inline-flex';
-                document.getElementById('upgrade-count').innerText = upgradeCount + " غرف";
-                alertBox.style.display = 'block';
-                document.getElementById('alert-upg-count').innerText = upgradeCount;
-                document.getElementById('val-single').innerText = finalS + " (بعد الترقية)";
-            } else {
-                badge.style.display = 'none';
-                alertBox.style.display = 'none';
-            }
-
-            // --- تحديث قسم النصيحة ---
-            let sAdvice = finalS > 0 ? `<div class="advice-line adv-green">✅ افتح مفرد (${finalS})</div>` : `<div class="advice-line adv-red">⛔ أغلق مفرد</div>`;
-            let rAdvice = finalR > 0 ? `<div class="advice-line adv-green">✅ افتح غرفة وصالة (${finalR})</div>` : `<div class="advice-line adv-red">⛔ أغلق غرفة وصالة</div>`;
-            
-            adviceDiv.innerHTML = sAdvice + rAdvice;
-
-            window.calcData = { netS, netR, upgradeCount, gainedS, gainedR, finalS, finalR };
+            if (upg > 0) {
+                alert.style.display = 'block'; document.getElementById('alert-upg-cnt').innerText = upg;
+                badge.style.display = 'inline-block'; badge.innerText = `⚡ ترقية: ${upg}`;
+            } else { alert.style.display = 'none'; badge.style.display = 'none'; }
+            updateAdvicePill('adv-single', 'مفرد', netS); updateAdvicePill('adv-suite', 'وصالة', netR);
         }
 
-        function validateInput(sum, cap, id1, id2) {
-            const el1 = document.getElementById(id1);
-            const el2 = document.getElementById(id2);
-            if (sum > cap) {
-                el1.classList.add('error');
-                el2.classList.add('error');
-                return false;
-            } else {
-                el1.classList.remove('error');
-                el2.classList.remove('error');
-                return true;
-            }
+        function updateBar(id, val, cap) {
+            const el = document.getElementById(id); if(!el) return;
+            let pct = (val / cap) * 100; el.style.width = pct + '%';
+            if(pct > 90) el.style.background = 'var(--danger)'; else if(pct > 50) el.style.background = 'var(--warning)'; else el.style.background = 'var(--success)';
         }
-
-        function updateCard(cardId, valId, value) {
-            const card = document.getElementById(cardId);
-            const valEl = document.getElementById(valId);
-            valEl.innerText = value;
-            card.classList.remove('stat-ok', 'stat-warn', 'stat-danger');
-            if (value > 0) card.classList.add('stat-ok');
-            else if (value === 0) card.classList.add('stat-warn');
-            else card.classList.add('stat-danger');
+        function updateChart(circleId, txtId, val, cap, cardId, baseClass) {
+            const circle = document.getElementById(circleId); const txt = document.getElementById(txtId); const card = document.querySelector(cardId);
+            let pct = 0; if(val > 0) pct = (val / cap) * 100; if(pct>100) pct=100; if(pct<0) pct=0;
+            circle.setAttribute('stroke-dasharray', `${pct}, 100`); txt.innerText = val;
+            card.className = `card ${baseClass}`;
+            if (val > 0) { circle.style.stroke = (baseClass === 'c-single') ? 'var(--color-single)' : 'var(--color-suite)'; }
+            else if (val === 0) { circle.style.stroke = 'var(--warning)'; card.classList.add('stat-warn'); }
+            else { circle.style.stroke = 'var(--danger)'; card.classList.add('stat-danger'); }
         }
-
-        // --- أدوات النظام ---
-        function saveData() {
-            const data = {};
-            document.querySelectorAll('input').forEach(i => data[i.id] = i.value);
-            localStorage.setItem('abella_data_v3', JSON.stringify(data));
+        function updateAdvicePill(id, name, val) {
+            const el = document.getElementById(id);
+            if (val > 0) { el.className = 'advice-pill pill-green'; el.innerText = `✅ افتح ${name} (${val})`; }
+            else { el.className = 'advice-pill pill-red'; el.innerText = `⛔ أغلق ${name}`; }
         }
-
-        function loadData() {
-            const data = JSON.parse(localStorage.getItem('abella_data_v3'));
-            if (data) {
-                for (const [key, val] of Object.entries(data)) {
-                    if(document.getElementById(key)) document.getElementById(key).value = val;
-                }
-            }
+        function vibrate(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
+        function saveData() { localStorage.setItem('abella_v4', JSON.stringify(s)); }
+        function loadData() { const d = JSON.parse(localStorage.getItem('abella_v4')); if(d) s = d; }
+        function resetData() { if(confirm('تصفير العدادات؟')) { s = { stayS:0, stayR:0, potS:0, potR:0, bkS:0, bkR:0, recS:0, recR:0 }; saveData(); updateUI(); } }
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('abella_theme', document.body.classList.contains('dark-mode')?'dark':'light'); }
+        function checkTheme() { if(localStorage.getItem('abella_theme')==='dark') document.body.classList.add('dark-mode'); }
+        function showExplain(t) {
+            const m = document.getElementById('explain-modal'); const c = document.getElementById('math-content'); let h = '';
+            if (t==='single') h = genMathHtml(CAP_S, s.stayS, s.potS, calc.gainS, s.bkS+s.recS, calc.netS, calc.upg, 'add');
+            else h = genMathHtml(CAP_R, s.stayR, s.potR, calc.gainR, s.bkR+s.recR, calc.netR, calc.upg, 'sub');
+            c.innerHTML = h; m.style.display = 'flex';
         }
-
-        function resetData() {
-            if(confirm('هل تريد مسح البيانات؟')) {
-                document.querySelectorAll('input').forEach(i => i.value = '');
-                saveData();
-                calculateAll();
-            }
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('abella_theme', isDark ? 'dark' : 'light');
-        }
-
-        function checkDarkMode() {
-            if(localStorage.getItem('abella_theme') === 'dark') document.body.classList.add('dark-mode');
-        }
-
-        function showExplain(type) {
-            const d = window.calcData;
-            const modal = document.getElementById('explain-modal');
-            const content = document.getElementById('math-content');
-            let html = '';
-            if (type === 'single') {
-                html = `
-                    <div class="math-row"><span>السعة الكلية</span><span>${CAP_S}</span></div>
-                    <div class="math-row"><span>(-) مشغول + محتمل</span><span>${state.stayS + state.potS}</span></div>
-                    <div class="math-row"><span>(+) مكسب مخاطرة</span><span>${d.gainedS}</span></div>
-                    <div class="math-row"><span>(-) حجوزات قادمة</span><span>${state.bkS + state.recS}</span></div>
-                    <div class="math-row" style="font-weight:bold; color:var(--primary)"><span>= الصافي الأولي</span><span>${d.netS}</span></div>
-                    ${d.upgradeCount > 0 ? `<div class="math-row" style="color:var(--upgrade)"><span>(+) تغطية ترقية</span><span>${d.upgradeCount}</span></div>` : ''}
-                `;
-            } else {
-                html = `
-                    <div class="math-row"><span>سعة الغرفة وصالة</span><span>${CAP_R}</span></div>
-                    <div class="math-row"><span>(-) مشغول + محتمل</span><span>${state.stayR + state.potR}</span></div>
-                    <div class="math-row"><span>(+) مكسب مخاطرة</span><span>${d.gainedR}</span></div>
-                    <div class="math-row"><span>(-) حجوزات قادمة</span><span>${state.bkR + state.recR}</span></div>
-                    <div class="math-row" style="font-weight:bold; color:var(--primary)"><span>= الصافي الأولي</span><span>${d.netR}</span></div>
-                    ${d.upgradeCount > 0 ? `<div class="math-row" style="color:var(--upgrade)"><span>(-) خصم للترقية</span><span>${d.upgradeCount}</span></div>` : ''}
-                `;
-            }
-            content.innerHTML = html;
-            modal.style.display = 'flex';
-        }
-
         function closeExplain() { document.getElementById('explain-modal').style.display = 'none'; }
-
-        // --- إرسال واتساب ---
-        function sendWhatsApp() {
-            const d = window.calcData;
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('ar-EG', {hour:'numeric', minute:'numeric', hour12:true});
-            
-            let upgradeMsg = "";
-            if(d.upgradeCount > 0) {
-                upgradeMsg = `\n(⚠️ تم خصم ${d.upgradeCount} لترقية المفرد)`;
-            }
-
-            const msg = `*تقرير فندق أبيلا 🏨*
-🕒 ${timeStr}
-------------------
-📊 *الوضع الحالي (متاح للبيع)*
-• مفرد: *${d.finalS}*
-• غرفة وصالة: *${d.finalR}* ${upgradeMsg}
-------------------
-📝 *التفاصيل*
-• إقامة (مجدد): ${state.stayS} مفرد | ${state.stayR} غرفة وصالة
-• خروج (محتمل): ${state.potS} مفرد | ${state.potR} غرفة وصالة
-• حجوزات (مؤكد): ${state.bkS + state.recS} مفرد | ${state.bkR + state.recR} غرفة وصالة
-------------------
-💡 *النصيحة الذهبية*
-1️⃣ ${d.finalS > 0 ? 'افتح مفرد ✅ ('+d.finalS+')' : 'أغلق مفرد ⛔'}
-2️⃣ ${d.finalR > 0 ? 'افتح غرفة وصالة ✅ ('+d.finalR+')' : 'أغلق غرفة وصالة ⛔'}
-`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        function genMathHtml(cap, stay, pot, gain, inc, net, upg, mode) {
+            let html = `<div class="math-row"><span>السعة الكلية</span><b>${cap}</b></div><div class="math-row"><span>(-) مشغول حالياً</span><span>${stay}</span></div><div class="math-row"><span>(-) خروج (مادي)</span><span>${pot}</span></div><div class="math-row"><span>(+) مكسب مخاطرة</span><span>${gain}</span></div><div class="math-row"><span>(-) حجوزات قادمة</span><span>${inc}</span></div><div style="border-top:1px solid #ccc; margin:5px 0"></div><div class="math-row"><span>= الصافي الأولي</span><b>${(cap-(stay+pot)+gain)-inc}</b></div>`;
+            if(upg > 0) { if(mode==='add') html += `<div class="math-row" style="color:var(--upgrade)"><span>(+) تغطية ترقية</span><b>${upg}</b></div>`; else html += `<div class="math-row" style="color:var(--upgrade)"><span>(-) خصم ترقية</span><b>${upg}</b></div>`; html += `<div class="math-row" style="font-weight:800; color:var(--primary)"><span>= النهائي</span><b>${net}</b></div>`; }
+            return html;
         }
+
+        function getReportText() {
+            const t = new Date().toLocaleTimeString('ar-EG',{hour:'numeric',minute:'numeric',hour12:true});
+            const upgMsg = calc.upg > 0 ? `\n(⚠️ تم خصم ${calc.upg} لترقية المفرد)` : "";
+            return `*تقرير فندق أبيلا 🏨*\n🕒 ${t}\n------------------\n📊 *متاح للبيع*\n• مفرد: *${calc.netS}*\n• غرفة وصالة: *${calc.netR}* ${upgMsg}\n------------------\n📝 *التفاصيل*\n• إقامة: ${s.stayS} مفرد | ${s.stayR} وصالة\n• خروج: ${s.potS} مفرد | ${s.potR} وصالة\n• حجوزات: ${s.bkS+s.recS} مفرد | ${s.bkR+s.recR} وصالة\n------------------\n💡 *النصيحة*\n1️⃣ ${calc.netS>0?'✅ افتح مفرد':'⛔ أغلق مفرد'}\n2️⃣ ${calc.netR>0?'✅ افتح وصالة':'⛔ أغلق وصالة'}`;
+        }
+        function sendWhatsApp() { window.open(`https://wa.me/?text=${encodeURIComponent(getReportText())}`, '_blank'); }
+        function copyText() { navigator.clipboard.writeText(getReportText()).then(() => { alert("تم نسخ التقرير 📋"); }); }
     </script>
 </body>
 </html>
