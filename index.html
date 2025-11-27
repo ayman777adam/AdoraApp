@@ -13,6 +13,7 @@
             --text-main: #2d3436;
             --text-sec: #636e72;
             --border-color: #dfe6e9;
+            
             --primary: #0984e3;
             --success: #00b894;
             --danger: #d63031;
@@ -42,87 +43,115 @@
             background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
-            padding: 15px 15px 200px 15px; /* مساحة كبيرة للفوتر الثابت */
+            padding: 15px 15px 220px 15px; /* مساحة كبيرة للفوتر */
             -webkit-tap-highlight-color: transparent;
             transition: 0.3s;
+            overflow-x: hidden;
         }
 
         body.dark-mode { background-image: none; }
+        
+        /* Zen Mode Effect */
+        body.zen-active .dashboard, 
+        body.zen-active .header-glass, 
+        body.zen-active .price-bar,
+        body.zen-active .sticky-footer {
+            opacity: 0.1;
+            filter: blur(2px);
+            transition: 0.3s;
+        }
 
         .container { max-width: 500px; margin: 0 auto; }
 
-        /* --- 2. Glass Header --- */
+        /* --- 2. Header & Tools --- */
         .header-glass {
             background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.5);
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 20px;
+            border-radius: 20px; padding: 15px; margin-bottom: 20px;
             display: flex; justify-content: space-between; align-items: center;
         }
         body.dark-mode .header-glass { background: rgba(45,45,45,0.7); border-color:rgba(255,255,255,0.1); }
         .header-title h1 { margin: 0; font-size: 1.1rem; color: var(--primary); font-weight: 800; }
+        
+        .tools-area { display: flex; align-items: center; gap: 10px; }
         .tools-btn { background: rgba(255,255,255,0.5); border: 1px solid var(--border-color); padding: 8px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
 
+        /* Season Toggle */
+        .season-toggle {
+            display: flex; align-items: center; gap: 5px;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            padding: 5px 10px; border-radius: 20px; cursor: pointer;
+            font-size: 0.8rem; font-weight: bold; transition: 0.3s;
+        }
+        .season-toggle.active { background: #dff9fb; border-color: var(--success); color: var(--success); }
+        .season-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; transition:0.3s;}
+        .season-toggle.active .season-dot { background: var(--success); box-shadow: 0 0 5px var(--success); }
+
         /* --- 3. Dashboard --- */
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .card { 
             background: var(--bg-card); border-radius: 18px; padding: 15px; 
             position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             border-bottom: 4px solid transparent; transition: transform 0.2s;
         }
-        .card:active { transform: scale(0.98); }
-        
-        .chart-container { position: relative; width: 80px; height: 80px; margin-bottom: 10px; }
+        .chart-container { position: relative; width: 70px; height: 70px; margin-bottom: 5px; }
         .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
         .circle-bg { fill: none; stroke: var(--border-color); stroke-width: 3.8; }
         .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; transition: stroke-dasharray 0.6s ease; }
         .percentage { fill: var(--text-main); font-family: 'Tajawal', sans-serif; font-weight: bold; font-size: 0.5em; text-anchor: middle; }
-        
-        .card-label { font-size: 0.85rem; font-weight: 700; margin-bottom: 2px; }
+        .card-label { font-size: 0.85rem; font-weight: 700; }
         .card-sub { font-size: 0.7rem; opacity: 0.7; }
         .c-single .circle { stroke: var(--color-single); } .c-single .card-label { color: var(--color-single); }
         .c-suite .circle { stroke: var(--color-suite); } .c-suite .card-label { color: var(--color-suite); }
-        
-        .upgrade-badge { font-size: 0.7rem; background-color: var(--upgrade); color: white; padding: 2px 6px; border-radius: 8px; margin-top: 5px; display: none; }
 
-        /* --- 4. Inputs & Steppers --- */
+        /* --- Price Bar (Dynamic) --- */
+        .price-bar {
+            background: var(--bg-card); border-radius: 15px; padding: 10px 15px;
+            margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 5px solid #ccc; transition: 0.3s;
+        }
+        .price-label { font-size: 0.8rem; color: var(--text-sec); font-weight: 600; }
+        .price-values { display: flex; gap: 15px; font-weight: 800; font-size: 1rem; }
+        .p-val span { font-size: 0.7rem; font-weight: normal; opacity: 0.7; margin-left: 3px; }
+        
+        .price-mode-std { border-left-color: var(--success); }
+        .price-mode-med { border-left-color: var(--warning); }
+        .price-mode-high { border-left-color: var(--danger); }
+
+        /* --- 4. Steppers --- */
         .section { background: var(--bg-card); border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .sec-title { font-weight: 700; font-size: 1rem; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); }
-        
         .control-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .control-label { flex: 1; font-size: 0.9rem; font-weight: 600; color: var(--text-sec); }
         .control-label span { display: block; font-size: 1.2rem; margin-right: 5px; float: right;}
         
         .stepper { display: flex; align-items: center; gap: 10px; background: var(--bg-body); padding: 5px; border-radius: 12px; }
         .step-btn {
-            width: 40px; height: 40px; border: none; border-radius: 10px;
-            font-size: 1.2rem; font-weight: bold; cursor: pointer;
+            width: 45px; height: 45px; border: none; border-radius: 12px;
+            font-size: 1.4rem; font-weight: bold; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             transition: 0.1s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            user-select: none; -webkit-user-select: none;
         }
         .step-btn:active { transform: scale(0.9); }
         .btn-minus { background: #fff; color: var(--danger); }
         .btn-plus { background: #fff; color: var(--success); }
         body.dark-mode .step-btn { background: #444; }
         
-        .val-display { font-size: 1.3rem; font-weight: 800; width: 30px; text-align: center; transition: transform 0.1s; }
-        .pop-anim { transform: scale(1.3); color: var(--primary); }
+        .val-display { font-size: 1.4rem; font-weight: 800; width: 35px; text-align: center; transition: transform 0.1s; }
+        .pop-anim { animation: pop 0.2s ease; color: var(--primary); }
+        @keyframes pop { 50% { transform: scale(1.4); } }
 
-        .cap-bar-bg { height: 4px; background: var(--border-color); border-radius: 2px; margin-top: 5px; width: 100%; position: relative; overflow: hidden; }
-        .cap-bar-fill { height: 100%; width: 0%; background: var(--success); transition: width 0.3s, background 0.3s; }
-        .lbl-single { color: var(--color-single); } .lbl-suite { color: var(--color-suite); }
-
-        /* --- 5. Sticky Bottom Bar (Updated) --- */
+        /* --- Footer & Sticky --- */
         .sticky-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border-top: 1px solid rgba(0,0,0,0.1);
-            padding: 15px 15px 5px 15px; /* Padding bottom reduced */
+            padding: 15px 15px 5px 15px;
             box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
             z-index: 999;
             display: flex; flex-direction: column; gap: 8px;
@@ -135,13 +164,11 @@
         .advice-pill {
             flex: 1; padding: 10px; border-radius: 12px; text-align: center;
             font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 5px;
-            transition: 0.3s;
         }
         .pill-green { background: rgba(0, 184, 148, 0.15); color: var(--success); border: 1px solid rgba(0, 184, 148, 0.3); }
         .pill-red { background: rgba(214, 48, 49, 0.15); color: var(--danger); border: 1px solid rgba(214, 48, 49, 0.3); }
 
         .actions-row { display: flex; gap: 10px; }
-        
         #submit-btn {
             flex: 1; padding: 14px; border: none; border-radius: 12px;
             background: linear-gradient(135deg, var(--primary), #0984e3);
@@ -149,26 +176,30 @@
             cursor: pointer; box-shadow: 0 4px 15px rgba(9, 132, 227, 0.3);
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        #copy-btn {
-            width: 50px; border: none; border-radius: 12px;
-            background: var(--input-bg); color: var(--text-sec);
-            font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            border: 1px solid var(--border-color);
-        }
-        
-        /* Footer Credits Inside Sticky */
+        #copy-btn { width: 50px; border: none; border-radius: 12px; background: var(--bg-body); color: var(--text-sec); font-size: 1.2rem; cursor: pointer; border: 1px solid var(--border-color); }
+
         .footer-credits {
-            text-align: center; font-size: 0.7rem; color: #b2bec3;
+            text-align: center; font-size: 0.75rem; color: #b2bec3;
             padding-top: 5px; padding-bottom: 5px;
-            border-top: 1px dashed rgba(0,0,0,0.05);
-            margin-top: 5px;
+            border-top: 1px dashed rgba(0,0,0,0.05); margin-top: 5px;
         }
         .footer-credits b { color: var(--text-sec); }
+
+        /* Gamification Toast */
+        #game-toast {
+            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            background: #2d3436; color: #fff; padding: 8px 15px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: bold; opacity: 0; pointer-events: none;
+            transition: 0.3s; z-index: 2000; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex; align-items: center; gap: 5px;
+        }
+        #game-toast.show { opacity: 1; top: 90px; }
 
         .alert-upgrade { background: rgba(108, 92, 231, 0.1); color: var(--upgrade); padding: 10px; border-radius: 10px; border: 1px solid var(--upgrade); text-align: center; font-size: 0.9rem; margin-bottom: 15px; display: none; }
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 2000; }
         .modal-content { background: var(--bg-card); padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; text-align: center; }
         .math-row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+
     </style>
 </head>
 <body>
@@ -178,11 +209,16 @@
             <div class="header-title">
                 <h1>تقرير إشغال فندق أبيلا</h1>
             </div>
-            <div style="display:flex; gap:8px;">
+            <div class="tools-area">
+                <div class="season-toggle" id="season-btn" onclick="toggleSeason()">
+                    <div class="season-dot"></div> موسم
+                </div>
                 <button class="tools-btn" onclick="toggleDarkMode()">🌙</button>
                 <button class="tools-btn" onclick="resetData()">🔄</button>
             </div>
         </div>
+        
+        <div id="game-toast">🚀 مبيعات الوردية: <span id="sales-count">0</span></div>
 
         <div class="dashboard">
             <div class="card c-single" id="card-single" onclick="showExplain('single')">
@@ -207,7 +243,6 @@
                 </div>
                 <div class="card-label">وصالة متاح</div>
                 <div class="card-sub">سعة: 20</div>
-                <div id="upgrade-badge" class="upgrade-badge">⚡ ترقية: 0</div>
             </div>
         </div>
 
@@ -215,45 +250,48 @@
             🚀 انتبه: تم خصم <b id="alert-upg-cnt">0</b> من الوصالة لترقية المفرد
         </div>
 
+        <div class="price-bar" id="price-bar">
+            <div class="price-label">💰 السعر المقترح <span id="price-status">(عادي)</span></div>
+            <div class="price-values">
+                <div class="p-val" style="color:var(--color-single)"><span id="p-s">200</span><span>مفرد</span></div>
+                <div class="p-val" style="color:var(--color-suite)"><span id="p-r">230</span><span>وصالة</span></div>
+            </div>
+        </div>
+
         <div class="section">
             <div class="sec-title">🏨 الإشغال الحالي</div>
-            
             <div class="control-row">
                 <div class="control-label lbl-single"><span>🛏️</span> مجدد (مفرد)</div>
-                <div class="stepper">
+                <div class="stepper" onmousedown="zenStart()" onmouseup="zenEnd()" ontouchstart="zenStart()" ontouchend="zenEnd()">
                     <button class="step-btn btn-minus" onclick="changeVal('stayS', -1, 4)">−</button>
                     <span class="val-display" id="disp-stayS">0</span>
                     <button class="step-btn btn-plus" onclick="changeVal('stayS', 1, 4)">+</button>
                 </div>
             </div>
-            <div class="cap-bar-bg"><div class="cap-bar-fill" id="bar-stayS"></div></div>
             
-            <hr style="border:0; border-top:1px dashed #eee; margin:15px 0;">
-
             <div class="control-row">
                 <div class="control-label lbl-suite"><span>🛋️</span> مجدد (وصالة)</div>
-                <div class="stepper">
+                <div class="stepper" onmousedown="zenStart()" onmouseup="zenEnd()" ontouchstart="zenStart()" ontouchend="zenEnd()">
                     <button class="step-btn btn-minus" onclick="changeVal('stayR', -1, 20)">−</button>
                     <span class="val-display" id="disp-stayR">0</span>
                     <button class="step-btn btn-plus" onclick="changeVal('stayR', 1, 20)">+</button>
                 </div>
             </div>
-            <div class="cap-bar-bg"><div class="cap-bar-fill" id="bar-stayR"></div></div>
         </div>
 
         <div class="section">
             <div class="sec-title">🚪 محتمل خروج (50%)</div>
             <div class="control-row">
                 <div class="control-label lbl-single"><span>🚪</span> خروج (مفرد)</div>
-                <div class="stepper">
+                <div class="stepper" onmousedown="zenStart()" onmouseup="zenEnd()" ontouchstart="zenStart()" ontouchend="zenEnd()">
                     <button class="step-btn btn-minus" onclick="changeVal('potS', -1, 4)">−</button>
                     <span class="val-display" id="disp-potS">0</span>
                     <button class="step-btn btn-plus" onclick="changeVal('potS', 1, 4)">+</button>
                 </div>
             </div>
-            <div class="control-row" style="margin-top:15px;">
+            <div class="control-row" style="margin-top:10px;">
                 <div class="control-label lbl-suite"><span>🚪</span> خروج (وصالة)</div>
-                <div class="stepper">
+                <div class="stepper" onmousedown="zenStart()" onmouseup="zenEnd()" ontouchstart="zenStart()" ontouchend="zenEnd()">
                     <button class="step-btn btn-minus" onclick="changeVal('potR', -1, 20)">−</button>
                     <span class="val-display" id="disp-potR">0</span>
                     <button class="step-btn btn-plus" onclick="changeVal('potR', 1, 20)">+</button>
@@ -262,41 +300,42 @@
         </div>
 
         <div class="section">
-            <div class="sec-title">📅 الحجوزات القادمة</div>
+            <div class="sec-title">📅 الحجوزات القادمة (مؤكد)</div>
             <div class="control-row">
                 <div class="control-label">بوكينج (مفرد)</div>
-                <div class="stepper">
+                <div class="stepper" onmousedown="zenStart()" onmouseup="zenEnd()" ontouchstart="zenStart()" ontouchend="zenEnd()">
                     <button class="step-btn btn-minus" onclick="changeVal('bkS', -1, 100)">−</button>
                     <span class="val-display" id="disp-bkS">0</span>
-                    <button class="step-btn btn-plus" onclick="changeVal('bkS', 1, 100)">+</button>
+                    <button class="step-btn btn-plus" onclick="changeVal('bkS', 1, 100, true)">+</button>
                 </div>
             </div>
             <div class="control-row">
                 <div class="control-label">استقبال (مفرد)</div>
-                <div class="stepper">
+                <div class="stepper" onmousedown="zenStart()" onmouseup="zenEnd()" ontouchstart="zenStart()" ontouchend="zenEnd()">
                     <button class="step-btn btn-minus" onclick="changeVal('recS', -1, 100)">−</button>
                     <span class="val-display" id="disp-recS">0</span>
-                    <button class="step-btn btn-plus" onclick="changeVal('recS', 1, 100)">+</button>
+                    <button class="step-btn btn-plus" onclick="changeVal('recS', 1, 100, true)">+</button>
                 </div>
             </div>
             <hr style="border:0; border-top:1px dashed #eee; margin:15px 0;">
             <div class="control-row">
                 <div class="control-label">بوكينج (وصالة)</div>
-                <div class="stepper">
+                <div class="stepper" onmousedown="zenStart()" onmouseup="zenEnd()" ontouchstart="zenStart()" ontouchend="zenEnd()">
                     <button class="step-btn btn-minus" onclick="changeVal('bkR', -1, 100)">−</button>
                     <span class="val-display" id="disp-bkR">0</span>
-                    <button class="step-btn btn-plus" onclick="changeVal('bkR', 1, 100)">+</button>
+                    <button class="step-btn btn-plus" onclick="changeVal('bkR', 1, 100, true)">+</button>
                 </div>
             </div>
             <div class="control-row">
                 <div class="control-label">استقبال (وصالة)</div>
-                <div class="stepper">
+                <div class="stepper" onmousedown="zenStart()" onmouseup="zenEnd()" ontouchstart="zenStart()" ontouchend="zenEnd()">
                     <button class="step-btn btn-minus" onclick="changeVal('recR', -1, 100)">−</button>
                     <span class="val-display" id="disp-recR">0</span>
-                    <button class="step-btn btn-plus" onclick="changeVal('recR', 1, 100)">+</button>
+                    <button class="step-btn btn-plus" onclick="changeVal('recR', 1, 100, true)">+</button>
                 </div>
             </div>
         </div>
+
     </div>
 
     <div class="sticky-footer">
@@ -324,71 +363,154 @@
     </div>
 
     <script>
+        // --- Constants & Config ---
         const CAP_S = 4, CAP_R = 20; const RISK = 0.5;
+        // Pricing Matrix [Std, Med, High]
+        const P_REG_S = [200, 230, 250]; const P_REG_R = [230, 250, 280];
+        const P_SEA_S = [280, 330, 380]; const P_SEA_R = [330, 380, 420];
+
+        // State
         let s = { stayS:0, stayR:0, potS:0, potR:0, bkS:0, bkR:0, recS:0, recR:0 };
         let calc = {};
+        let isSeason = false;
+        let sessionSales = 0;
 
         window.onload = () => { loadData(); checkTheme(); updateUI(); };
 
-        function changeVal(key, amount, maxCap) {
+        // --- Interactive Functions ---
+        function changeVal(key, amount, maxCap, isSale = false) {
             let val = s[key] + amount;
             if (val < 0) val = 0;
+            // Prevent going over logic capacity (soft limit for Stay/Pot)
             if (['stayS','potS'].includes(key) && (s.stayS + s.potS + amount > CAP_S)) { vibrate(50); return; }
             if (['stayR','potR'].includes(key) && (s.stayR + s.potR + amount > CAP_R)) { vibrate(50); return; }
+            
             s[key] = val;
-            vibrate(10); 
-            // Trigger Animation
+            vibrate(10);
+            
+            // Anim
             const el = document.getElementById('disp-'+key);
-            el.classList.remove('pop-anim');
-            void el.offsetWidth; // Trigger reflow
-            el.classList.add('pop-anim');
+            el.classList.remove('pop-anim'); void el.offsetWidth; el.classList.add('pop-anim');
+            
+            // Gamification
+            if(isSale && amount > 0) {
+                sessionSales++;
+                showToast(`🚀 مبيعات الوردية: ${sessionSales}`);
+            }
+
             saveData(); updateUI();
         }
 
+        function toggleSeason() {
+            isSeason = !isSeason;
+            const btn = document.getElementById('season-btn');
+            if(isSeason) btn.classList.add('active'); else btn.classList.remove('active');
+            updateUI();
+        }
+
+        function zenStart() { document.body.classList.add('zen-active'); }
+        function zenEnd() { document.body.classList.remove('zen-active'); }
+
+        // --- Core Logic ---
         function updateUI() {
-            for (let k in s) { const el = document.getElementById('disp-'+k); if(el) el.innerText = s[k]; }
-            updateBar('bar-stayS', s.stayS, CAP_S); updateBar('bar-stayR', s.stayR, CAP_R);
+            // Update Displays
+            for (let k in s) document.getElementById('disp-'+k).innerText = s[k];
+
+            // Calculation
             const gainS = Math.floor(s.potS * RISK); const gainR = Math.floor(s.potR * RISK);
             let netS = (CAP_S - (s.stayS + s.potS) + gainS) - (s.bkS + s.recS);
             let netR = (CAP_R - (s.stayR + s.potR) + gainR) - (s.bkR + s.recR);
-            let upg = 0; if (netS < 0 && netR > 0) { upg = Math.min(Math.abs(netS), netR); netS += upg; netR -= upg; }
+            let upg = 0;
+            if (netS < 0 && netR > 0) { upg = Math.min(Math.abs(netS), netR); netS += upg; netR -= upg; }
             calc = { netS, netR, upg, gainS, gainR };
+
+            // Update Charts
             updateChart('circle-s', 'txt-s', netS, CAP_S, '#card-single', 'c-single');
             updateChart('circle-r', 'txt-r', netR, CAP_R, '#card-suite', 'c-suite');
+
+            // Upgrade Alert
             const alert = document.getElementById('upgrade-alert');
-            const badge = document.getElementById('upgrade-badge');
-            if (upg > 0) {
-                alert.style.display = 'block'; document.getElementById('alert-upg-cnt').innerText = upg;
-                badge.style.display = 'inline-block'; badge.innerText = `⚡ ترقية: ${upg}`;
-            } else { alert.style.display = 'none'; badge.style.display = 'none'; }
+            if (upg > 0) { alert.style.display = 'block'; document.getElementById('alert-upg-cnt').innerText = upg; } 
+            else alert.style.display = 'none';
+
+            // Advice Pills
             updateAdvicePill('adv-single', 'مفرد', netS); updateAdvicePill('adv-suite', 'وصالة', netR);
+
+            // Pricing Logic
+            updatePricing(netS, netR);
         }
 
-        function updateBar(id, val, cap) {
-            const el = document.getElementById(id); if(!el) return;
-            let pct = (val / cap) * 100; el.style.width = pct + '%';
-            if(pct > 90) el.style.background = 'var(--danger)'; else if(pct > 50) el.style.background = 'var(--warning)'; else el.style.background = 'var(--success)';
+        function updatePricing(netS, netR) {
+            // Determine Level based on Availability %
+            // High Demand (Red): Avail < 25% (S < 1, R < 5)
+            // Med Demand (Yellow): Avail < 50% (S < 2, R < 10)
+            // Std Demand (Green): Else
+            
+            let lvlS = 0; if(netS < 1) lvlS = 2; else if(netS < 2) lvlS = 1;
+            let lvlR = 0; if(netR < 5) lvlR = 2; else if(netR < 10) lvlR = 1;
+            
+            // Use the higher demand level for the global status
+            let globalLvl = Math.max(lvlS, lvlR); 
+            
+            const pricesS = isSeason ? P_SEA_S : P_REG_S;
+            const pricesR = isSeason ? P_SEA_R : P_REG_R;
+
+            document.getElementById('p-s').innerText = pricesS[globalLvl];
+            document.getElementById('p-r').innerText = pricesR[globalLvl];
+
+            const bar = document.getElementById('price-bar');
+            const statusTxt = document.getElementById('price-status');
+            
+            bar.className = 'price-bar'; // reset
+            if(globalLvl === 0) { bar.classList.add('price-mode-std'); statusTxt.innerText = '(قياسي)'; }
+            else if(globalLvl === 1) { bar.classList.add('price-mode-med'); statusTxt.innerText = '(متوسط)'; }
+            else { bar.classList.add('price-mode-high'); statusTxt.innerText = '(مرتفع)'; }
         }
-        function updateChart(circleId, txtId, val, cap, cardId, baseClass) {
-            const circle = document.getElementById(circleId); const txt = document.getElementById(txtId); const card = document.querySelector(cardId);
-            let pct = 0; if(val > 0) pct = (val / cap) * 100; if(pct>100) pct=100; if(pct<0) pct=0;
+
+        function updateChart(cId, tId, val, cap, cardId, cls) {
+            const circle = document.getElementById(cId); const txt = document.getElementById(tId); const card = document.querySelector(cardId);
+            let pct = val > 0 ? (val/cap)*100 : 0; if(pct>100) pct=100; if(pct<0) pct=0;
             circle.setAttribute('stroke-dasharray', `${pct}, 100`); txt.innerText = val;
-            card.className = `card ${baseClass}`;
-            if (val > 0) { circle.style.stroke = (baseClass === 'c-single') ? 'var(--color-single)' : 'var(--color-suite)'; }
-            else if (val === 0) { circle.style.stroke = 'var(--warning)'; card.classList.add('stat-warn'); }
-            else { circle.style.stroke = 'var(--danger)'; card.classList.add('stat-danger'); }
+            card.className = `card ${cls}`;
+            if(val>0) circle.style.stroke = (cls==='c-single')?'var(--color-single)':'var(--color-suite)';
+            else if(val===0) { circle.style.stroke='var(--warning)'; card.classList.add('stat-warn'); }
+            else { circle.style.stroke='var(--danger)'; card.classList.add('stat-danger'); }
         }
+
         function updateAdvicePill(id, name, val) {
             const el = document.getElementById(id);
             if (val > 0) { el.className = 'advice-pill pill-green'; el.innerText = `✅ افتح ${name} (${val})`; }
             else { el.className = 'advice-pill pill-red'; el.innerText = `⛔ أغلق ${name}`; }
         }
+
+        function showToast(msg) {
+            const t = document.getElementById('game-toast');
+            document.getElementById('sales-count').innerText = sessionSales;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        // --- Utils ---
         function vibrate(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
-        function saveData() { localStorage.setItem('abella_v4', JSON.stringify(s)); }
-        function loadData() { const d = JSON.parse(localStorage.getItem('abella_v4')); if(d) s = d; }
-        function resetData() { if(confirm('تصفير العدادات؟')) { s = { stayS:0, stayR:0, potS:0, potR:0, bkS:0, bkR:0, recS:0, recR:0 }; saveData(); updateUI(); } }
+        function saveData() { localStorage.setItem('abella_v4_1', JSON.stringify(s)); }
+        function loadData() { const d = JSON.parse(localStorage.getItem('abella_v4_1')); if(d) s = d; }
+        function resetData() { if(confirm('تصفير العدادات؟')) { s = { stayS:0, stayR:0, potS:0, potR:0, bkS:0, bkR:0, recS:0, recR:0 }; sessionSales=0; saveData(); updateUI(); } }
         function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('abella_theme', document.body.classList.contains('dark-mode')?'dark':'light'); }
         function checkTheme() { if(localStorage.getItem('abella_theme')==='dark') document.body.classList.add('dark-mode'); }
+        
+        // --- Report Generation ---
+        function getReportText() {
+            const t = new Date().toLocaleTimeString('ar-EG',{hour:'numeric',minute:'numeric',hour12:true});
+            const upgMsg = calc.upg > 0 ? `\n(⚠️ تم خصم ${calc.upg} لترقية المفرد)` : "";
+            const ps = document.getElementById('p-s').innerText;
+            const pr = document.getElementById('p-r').innerText;
+            
+            return `*تقرير فندق أبيلا 🏨*\n🕒 ${t}\n------------------\n📊 *متاح للبيع*\n• مفرد: *${calc.netS}*\n• غرفة وصالة: *${calc.netR}* ${upgMsg}\n------------------\n💰 *الأسعار المقترحة*\n• مفرد: ${ps} | وصالة: ${pr}\n------------------\n📝 *التفاصيل*\n• إقامة: ${s.stayS} مفرد | ${s.stayR} وصالة\n• خروج: ${s.potS} مفرد | ${s.potR} وصالة\n• حجوزات: ${s.bkS+s.recS} مفرد | ${s.bkR+s.recR} وصالة\n------------------\n💡 *النصيحة*\n1️⃣ ${calc.netS>0?'✅ افتح مفرد':'⛔ أغلق مفرد'}\n2️⃣ ${calc.netR>0?'✅ افتح وصالة':'⛔ أغلق وصالة'}`;
+        }
+        function sendWhatsApp() { window.open(`https://wa.me/?text=${encodeURIComponent(getReportText())}`, '_blank'); }
+        function copyText() { navigator.clipboard.writeText(getReportText()).then(() => { alert("تم نسخ التقرير 📋"); }); }
+
+        // Explain Modal
         function showExplain(t) {
             const m = document.getElementById('explain-modal'); const c = document.getElementById('math-content'); let h = '';
             if (t==='single') h = genMathHtml(CAP_S, s.stayS, s.potS, calc.gainS, s.bkS+s.recS, calc.netS, calc.upg, 'add');
@@ -401,14 +523,6 @@
             if(upg > 0) { if(mode==='add') html += `<div class="math-row" style="color:var(--upgrade)"><span>(+) تغطية ترقية</span><b>${upg}</b></div>`; else html += `<div class="math-row" style="color:var(--upgrade)"><span>(-) خصم ترقية</span><b>${upg}</b></div>`; html += `<div class="math-row" style="font-weight:800; color:var(--primary)"><span>= النهائي</span><b>${net}</b></div>`; }
             return html;
         }
-
-        function getReportText() {
-            const t = new Date().toLocaleTimeString('ar-EG',{hour:'numeric',minute:'numeric',hour12:true});
-            const upgMsg = calc.upg > 0 ? `\n(⚠️ تم خصم ${calc.upg} لترقية المفرد)` : "";
-            return `*تقرير فندق أبيلا 🏨*\n🕒 ${t}\n------------------\n📊 *متاح للبيع*\n• مفرد: *${calc.netS}*\n• غرفة وصالة: *${calc.netR}* ${upgMsg}\n------------------\n📝 *التفاصيل*\n• إقامة: ${s.stayS} مفرد | ${s.stayR} وصالة\n• خروج: ${s.potS} مفرد | ${s.potR} وصالة\n• حجوزات: ${s.bkS+s.recS} مفرد | ${s.bkR+s.recR} وصالة\n------------------\n💡 *النصيحة*\n1️⃣ ${calc.netS>0?'✅ افتح مفرد':'⛔ أغلق مفرد'}\n2️⃣ ${calc.netR>0?'✅ افتح وصالة':'⛔ أغلق وصالة'}`;
-        }
-        function sendWhatsApp() { window.open(`https://wa.me/?text=${encodeURIComponent(getReportText())}`, '_blank'); }
-        function copyText() { navigator.clipboard.writeText(getReportText()).then(() => { alert("تم نسخ التقرير 📋"); }); }
     </script>
 </body>
 </html>
