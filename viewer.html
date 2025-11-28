@@ -10,25 +10,35 @@
         margin: 0;
         font-family: "Tajawal", sans-serif;
         background: #f7f9fa;
+        overflow: hidden; /* منع التمرير في الصفحة الرئيسية */
     }
 
+    /* زر عائم ومحسن */
     #switchBtn {
         position: fixed;
-        top: 10px;
-        left: 10px;
+        bottom: 130px; 
+        left: 20px;    
         z-index: 99999;
-        padding: 10px 18px;
-        border-radius: 25px;
+        padding: 12px 25px;
+        border-radius: 50px;
         font-weight: 800;
+        font-size: 1rem;
         color: white;
-        border: none;
+        border: 2px solid white;
         cursor: pointer;
-        background: #d63031; /* أحمر = وضع الموظفين */
+        background: #d63031; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: 0.3s;
+    }
+
+    #switchBtn:active {
+        transform: scale(0.95);
     }
 
     iframe {
         width: 100%;
-        height: calc(100vh - 0px);
+        height: 100vh;       /* متصفحات قديمة */
+        height: 100dvh;      /* الحل الاحترافي للموبايل */
         border: none;
         display: none;
     }
@@ -38,39 +48,53 @@
 
 <body>
 
-<button id="switchBtn" onclick="switchMode()">العمال</button>
+<button id="switchBtn" onclick="toggleMode()">👷 الذهاب للعمال</button>
 
-<iframe id="staffFrame" src="index.html" style="display:block;"></iframe>
+<iframe id="staffFrame" src="index.html"></iframe>
 <iframe id="workerFrame" src="index2.html"></iframe>
 
 <script>
-let mode = "staff";
+    // 🧠 الذاكرة: استرجاع الوضع المحفوظ أو البدء بالموظفين
+    let currentMode = localStorage.getItem('abella_view_mode') || 'staff';
 
-function switchMode() {
-    const staff = document.getElementById("staffFrame");
-    const worker = document.getElementById("workerFrame");
+    const staffFrame = document.getElementById("staffFrame");
+    const workerFrame = document.getElementById("workerFrame");
     const btn = document.getElementById("switchBtn");
 
-    if (mode === "staff") {
-        // عرض العمال
-        staff.style.display = "none";
-        worker.style.display = "block";
-
-        btn.style.background = "#00b894"; // أخضر
-        btn.textContent = "الموظفين";
-
-        mode = "worker";
-    } else {
-        // عرض الموظفين
-        worker.style.display = "none";
-        staff.style.display = "block";
-
-        btn.style.background = "#d63031"; // أحمر
-        btn.textContent = "العمال";
-
-        mode = "staff";
+    // دالة لتطبيق الوضع
+    function applyMode(mode) {
+        if (mode === "worker") {
+            // تفعيل وضع العمال
+            staffFrame.style.display = "none";
+            workerFrame.style.display = "block";
+            
+            btn.style.background = "#00b894"; // أخضر
+            btn.innerHTML = "👨‍💼 الذهاب للموظفين";
+            document.title = "نظام العمال - أبيلا";
+        } else {
+            // تفعيل وضع الموظفين
+            workerFrame.style.display = "none";
+            staffFrame.style.display = "block";
+            
+            btn.style.background = "#d63031"; // أحمر
+            btn.innerHTML = "👷 الذهاب للعمال";
+            document.title = "تقرير الإشغال - أبيلا";
+        }
+        // حفظ الوضع الجديد في الذاكرة
+        localStorage.setItem('abella_view_mode', mode);
+        currentMode = mode;
     }
-}
+
+    // دالة التبديل عند الضغط
+    function toggleMode() {
+        const newMode = (currentMode === "staff") ? "worker" : "staff";
+        applyMode(newMode);
+    }
+
+    // التشغيل الأولي عند فتح الصفحة
+    window.onload = () => {
+        applyMode(currentMode);
+    };
 </script>
 
 </body>

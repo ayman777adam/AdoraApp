@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title data-lang-key="abella_system">نظام فندق أبيلا</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-body: #f4f6f8;
@@ -12,13 +12,13 @@
             --text-main: #37474f;
             --text-sec: #78909c;
             --border-color: #cfd8dc;
-            --primary: #0097a7;       /* Teal Primary (Reverted) */
-            --primary-light: #e0f7fa; /* Lighter Teal */
+            --primary: #0097a7;       
+            --primary-light: #e0f7fa; 
             --success: #00b894;
             --danger: #d63031;
             --warning: #f1c40f;
             --upgrade: #7e57c2;
-            --gold-btn: #FFD700;     /* New Gold Button Color */
+            --gold-btn: #FFD700;     
             --shadow: 0 4px 20px rgba(0, 151, 167, 0.08);
         }
 
@@ -37,7 +37,7 @@
             background-size: 20px 20px;
             color: var(--text-main);
             margin: 0;
-            padding: 15px 15px 130px 15px; /* Adjusted padding for fixed footer */
+            padding: 15px 15px 130px 15px; 
             -webkit-tap-highlight-color: transparent;
             overflow-x: hidden;
         }
@@ -59,8 +59,6 @@
         .header-title { display: flex; align-items: center; gap: 10px; flex: 1; }
         .header-title h1 { font-size: 1rem; margin: 0; color: var(--primary); font-weight: 800; line-height: 1.2; }
         
-        /* Toggle Button Styles Removed */
-
         .tools-area { display: flex; gap: 8px; }
         .tools-btn { background: var(--bg-body); border: 1px solid var(--border-color); padding: 8px; border-radius: 10px; cursor: pointer; }
 
@@ -73,8 +71,27 @@
         .card, .section { background: var(--bg-card); border-radius: 18px; padding: 15px; box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 15px; }
         .sec-title { font-weight: 700; color: var(--primary); margin-bottom: 15px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; }
         
-        /* Log Title (clickable) */
         .log-title-clickable { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+
+        /* --- Search Bar --- */
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+        .search-box:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
 
         /* --- Worker UI Specifics --- */
         .room-row {
@@ -123,6 +140,15 @@
         /* Indicators */
         .quiet-notif { background: var(--warning); color: #333; padding: 8px; text-align: center; border-radius: 8px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: none; }
         
+        /* Sync Indicator */
+        #sync-indicator {
+            position: fixed; top: 15px; left: 15px;
+            background: rgba(0,0,0,0.7); color: white;
+            padding: 5px 10px; border-radius: 15px;
+            font-size: 0.7rem; display: none; z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
         /* Stats Grid */
         .stats-grid { 
             display: grid; 
@@ -310,10 +336,11 @@
             <div id="offline-indicator" class="quiet-notif" style="background:var(--danger); color:white;" data-lang-key="offline_mode">⚠️ وضع عدم الاتصال: يتم حفظ البيانات محلياً</div>
             <div id="rain-mode-indicator" class="quiet-notif" style="background:var(--upgrade); color:white;" data-lang-key="high_pressure">⚡ الوضع التيربو مفعّل</div>
             <div id="timer-alert-bar" class="quiet-notif" data-lang-key="warn_overtime">⚠️ انتبه: يوجد غرف تجاوزت الوقت المحدد!</div>
+            <div id="sync-indicator">🔄 جاري الحفظ...</div>
 
             <div class="section" style="margin-bottom:15px;">
                 <div class="worker-action-row" style="margin-bottom: 0;">
-                    <button id="turbo-mode-btn" class="full-btn" style="background:var(--success); font-size:0.9rem; flex: 1;" onclick="toggleTurboMode" data-lang-key="turbo_btn_on">
+                    <button id="turbo-mode-btn" class="full-btn" style="background:var(--success); font-size:0.9rem; flex: 1;" onclick="toggleTurboMode()" data-lang-key="turbo_btn_on">
                         تفعيل الوضع التيربو لكل الغرف - المواسم أو الطوارئ
                     </button>
                     <button id="report-btn-action" class="full-btn" style="background:var(--gold-btn); color: var(--text-main); font-size:0.9rem; flex: 1;" onclick="generateDailyReport()" data-lang-key="send_daily_report">
@@ -365,6 +392,9 @@
 
             <div class="section">
                 <div class="sec-title" data-lang-key="tracking_table">🚪 تتبع الغرف (جدول ذكي)</div>
+                
+                <input type="text" id="search-bar" class="search-box" placeholder="🔍 بحث برقم الغرفة أو الحالة..." oninput="updateSearch(this.value)">
+
                 <div id="rooms-container">
                     </div>
             </div>
@@ -475,14 +505,39 @@
         </div>
     </div>
 
-
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script>
         // --- CONFIG & STATE ---
-        const ADMIN_PASSWORD = "fahd5"; // Admin password for reset
-        const TRAVEL_TIME_MS = 15 * 60 * 1000; // 15 minutes travel time
+        // 🔒 HASHED PASSWORD "fahd5"
+        function simpleHash(s) {
+            let h = 0xdeadbeef;
+            for(let i=0;i<s.length;i++) h = Math.imul(h ^ s.charCodeAt(i), 2654435761);
+            return ((h ^ h >>> 16) >>> 0);
+        }
+        const ADMIN_HASH = 97325605; // Hash for "fahd5"
+        const STATE_KEY = 'abella_v6_fixed';
+
+        // 🔥 بيانات التهيئة الحقيقية من Firebase الخاصة بك 🔥
+        const firebaseConfig = {
+          apiKey: "AIzaSyBApR7pOlOPcP93ZYUBeT5D7hgAuV0dg0M",
+          authDomain: "abella-all.firebaseapp.com",
+          databaseURL: "https://abella-all-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "abella-all",
+          storageBucket: "abella-all.firebasestorage.app",
+          messagingSenderId: "608492409476",
+          appId: "1:608492409476:web:6d6ac8e85dd2fba1b328d1"
+        };
+        
+        // 🔥 Initialize Firebase and Firestore
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const collectionName = 'workerState_v1'; // اسم المجموعة في Firestore
+
         let isTurboMode = false; // NEW: Global Turbo Mode
         let workerState = { rooms: [], log: [] };
         let buffer = [];
+        let searchText = ""; // 🔍 Search State
         
         // --- TRANSLATION DATA ---
         // المفاتيح تم توليدها بناءً على الكود، والقيم مأخوذة من ملفات JSON المرفقة من المستخدم
@@ -690,7 +745,7 @@
                 'image_camera': '📸 Open Camera',
                 'image_file': '📄 Upload File from Gallery (Image/PDF)',
                 'photo_hint': '(Only one file can be selected)',
-                'confirm_send': 'Confirm & Send 🚀',
+                'confirm_send': 'Confirm & Submit 🚀',
                 'cancel': 'Cancel',
                 'alert_repair_details': '🔴 Required: Must describe items needing maintenance.',
                 'alert_image_mandatory': "🔴 Required: Must attach image when selecting 'Room has many notes/issues'.",
@@ -834,14 +889,14 @@
                 'password_msg_log': 'موجودہ لاگ ختم کرنے کے لیے ایڈمن پاس ورڈ درج کریں۔',
                 'password_placeholder': 'پاس ورڈ',
                 'btn_confirm_reset': 'ختم کرنے کی تصدیق کریں',
-                'btn_confirm_log_clear': 'ختم کرنے کی تصدیق کریں',
+                'btn_confirm_log_clear': 'ختم کرنے کی تصديق کریں',
                 'toast_data_cleared': '✅ ڈیٹا کامیابی سے ختم ہو گیا اور نیا دن شروع ہو گیا ہے۔',
                 'toast_log_cleared': '✅ آپریشن لاگ کامیابی سے ختم ہو گیا ہے۔',
                 'alert_wrong_password_allowed': '❌ غلط پاس ورڈ. صبح 1:00 بجے کے بعد درست پاس ورڈ درج کیے بغیر ختم نہیں کیا جا سکتا۔',
-                'alert_wrong_password_denied': '❌ غلط پاس ورڈ. ختم کرنے کی اجازت صرف درست پاس ورڈ کے ساتھ یا صبح 1:00 بجے کے بعد ہے۔',
-                'confirm_modal_title': 'کارروائی کی تصدیق کریں',
+                'alert_wrong_password_denied': '❌ غلط پاس ورڈ. ختم کرنے کی اجازت صرف درست پاس ورڈ کے ساتھ أو صبح 1:00 بجے کے بعد ہے۔',
+                'confirm_modal_title': 'كارروائي کی تصديق کریں',
                 'confirm_modal_message': 'کیا آپ آگے بڑھنے کے لیے یقینی ہیں؟',
-                'confirm_modal_yes': 'ہاں، تصدیق کریں',
+                'confirm_modal_yes': 'ہاں، تصديق کریں',
                 'status_time_check_now': 'معائنہ جاری ہے',
                 'log_in_alert': '⚠️ مہمان اندر ہے',
                 'status_acknowledging': 'منتقل ہو رہا ہے',
@@ -963,7 +1018,7 @@
                 'alert_wrong_password_denied': '❌ ভুল পাসওয়ার্ড. কেবল সঠিক পাসওয়ার্ড সহ বা ভোর ১:০০ টার পরে মোছার অনুমতি আছে।',
                 'confirm_modal_title': 'কার্য নিশ্চিত করুন',
                 'confirm_modal_message': 'আপনি কি এগিয়ে যেতে নিশ্চিত?',
-                'confirm_modal_yes': 'হ্যাঁ, নিশ্চিত করুন',
+                'confirm_modal_yes': 'হ্যাঁ، নিশ্চিত করুন',
                 'status_time_check_now': 'পরিদর্শন চলছে',
                 'log_in_alert': '⚠️ অতিথি ভেতরে আছেন',
                 'status_acknowledging': 'স্থানান্তরিত হচ্ছে',
@@ -981,16 +1036,12 @@
 
         // --- INIT ---
         window.onload = () => {
-            loadState();
-            renderRooms();
-            updateStats();
-            setInterval(tick, 1000); 
+            loadState(); // 👈 Start the Firebase Listener
+            setInterval(tick, 1000); // Keep local timers running
             checkConn();
             window.addEventListener('online', checkConn);
             window.addEventListener('offline', checkConn);
-            
-            // Initial translation call for all dynamic elements
-            applyTranslation(currentLang);
+            // Redundant UI updates (renderRooms, updateStats) are now handled inside loadState/onSnapshot
         };
 
         // --- HAPTIC & CONFIRMATION ---
@@ -1059,77 +1110,104 @@
                 btn.innerText = getTranslation('turbo_btn_on');
                 showConfirmation('toast_turbo_off');
             }
-            localStorage.setItem('abella_turbo_mode', isTurboMode);
+            // CLEANUP: Saving state to Firebase for global consistency
+            saveState(); 
         }
 
         // --- CORE LOGIC ---
 
+        // 🔍 UPDATE SEARCH STATE
+        function updateSearch(val) {
+            searchText = val.trim();
+            renderRooms();
+        }
+
         function renderRooms() {
             const container = document.getElementById('rooms-container');
             
-            // LIFO SORTING LOGIC: Find active rooms
             const activeRooms = workerState.rooms.filter(r => r.num !== '');
+            activeRooms.sort((a, b) => b.id - a.id);
 
-            activeRooms.sort((a, b) => b.id - a.id); // Sort by ID descending (newest first)
-
-            // Identify the single empty input row (it must exist for input)
             let inputRoom = workerState.rooms.find(r => r.num === '');
-            
-            // Bug 2 Fix: Check for any active undo timer
-            const isAnyUndoActive = activeRooms.some(r => r.undoTimer > 0); 
 
             let displayOrder = [];
-            // Only show input row if NO undo is active anywhere
-            if (!isAnyUndoActive && inputRoom) { 
-                displayOrder.push(inputRoom); // Input row is always first
-            }
-            displayOrder = displayOrder.concat(activeRooms);
             
+            // 🔍 IF SEARCHING: Show filtered results ONLY (Hide Input Row)
+            if (searchText) {
+                 displayOrder = activeRooms.filter(r => {
+                    const numMatch = r.num.toString().includes(searchText);
+                    // Simple type check (can be expanded to localized strings if needed)
+                    const typeMatch = (r.type === 'stay' && 'ساكن'.includes(searchText)) || 
+                                      (r.type === 'out' && 'خروج'.includes(searchText));
+                    return numMatch || typeMatch;
+                 });
+            } else {
+                // 🛡️ STANDARD MODE: Single Task Logic
+                // Show input row ONLY if there are NO active rooms
+                if (inputRoom && activeRooms.length === 0) {
+                    displayOrder.push(inputRoom);
+                }
+                displayOrder = displayOrder.concat(activeRooms);
+            }
+            
+            // 🔥 Self-Healing: If empty in standard mode, create input row
+            if (!searchText && displayOrder.length === 0) {
+                const newInputRoom = { 
+                    id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
+                };
+                workerState.rooms.push(newInputRoom);
+                displayOrder.push(newInputRoom);
+                saveState();
+            }
             
             // Generate HTML for all rows
-            container.innerHTML = displayOrder.map((r) => {
-                const isStay = r.type === 'stay';
-                const guestStatusRequired = isStay && r.num && r.status === 'pending';
-                
-                // Determine style for sub-select based on validation
-                const guestStatusStyle = guestStatusRequired && !r.guestStatus ? 'border: 2px solid var(--danger)' : '';
-                
-                // Use getTranslation for option texts
-                const subSelectHTML = isStay ? `
-                    <div class="sub-select-container">
-                        <select class="type-select" onchange="updateRoomData(${r.id}, 'guestStatus', this.value)" ${r.status !== 'pending' ? 'disabled' : ''} style="${guestStatusStyle}">
-                            <option value="" disabled ${!r.guestStatus ? 'selected' : ''} data-lang-key="guest_status_default">${getTranslation('guest_status_default')}</option>
-                            <option value="in" ${r.guestStatus === 'in' ? 'selected' : ''} data-lang-key="guest_status_in">${getTranslation('guest_status_in')}</option>
-                            <option value="out" ${r.guestStatus === 'out' ? 'selected' : ''} data-lang-key="guest_status_out">${getTranslation('guest_status_out')}</option>
-                        </select>
-                    </div>
-                ` : '';
-
-                return `
-                    <div class="room-row status-${getRoomStatusClass(r)}" id="row-${r.id}">
-                        <div class="timer-display ${getTimerClass(r)}">
-                            ${getTimerText(r)}
-                            <span class="badge">${getBadgeText(r)}</span>
-                        </div>
-                        <div>
-                            <input type="number" class="room-input" data-lang-placeholder="input_placeholder" placeholder="${getTranslation('input_placeholder')}"
-                                value="${r.num}" onchange="updateRoomData(${r.id}, 'num', this.value)" 
-                                ${r.status !== 'pending' ? 'disabled' : ''}>
-                        </div>
-                        <div>
-                            <select class="type-select" onchange="updateRoomData(${r.id}, 'type', this.value)" ${r.status !== 'pending' ? 'disabled' : ''} style="border-color:${!r.type && r.num ? 'red' : '#cfd8dc'}">
-                                <option value="" disabled ${!r.type ? 'selected' : ''} data-lang-key="type_select_default">${getTranslation('type_select_default')}</option>
-                                <option value="stay" ${r.type==='stay'?'selected':''} data-lang-key="type_option_stay">${getTranslation('type_option_stay')}</option>
-                                <option value="out" ${r.type==='out'?'selected':''} data-lang-key="type_option_out">${getTranslation('type_option_out')}</option>
+            if (displayOrder.length === 0 && searchText) {
+                container.innerHTML = `<div style="text-align:center; color:#999; padding:20px;">لا توجد نتائج مطابقة لـ "${searchText}"</div>`;
+            } else {
+                container.innerHTML = displayOrder.map((r) => {
+                    const isStay = r.type === 'stay';
+                    const guestStatusRequired = isStay && r.num && r.status === 'pending';
+                    
+                    // Determine style for sub-select based on validation
+                    const guestStatusStyle = guestStatusRequired && !r.guestStatus ? 'border: 2px solid var(--danger)' : '';
+                    
+                    // Use getTranslation for option texts
+                    const subSelectHTML = isStay ? `
+                        <div class="sub-select-container">
+                            <select class="type-select" onchange="updateRoomData(${r.id}, 'guestStatus', this.value)" ${r.status !== 'pending' ? 'disabled' : ''} style="${guestStatusStyle}">
+                                <option value="" disabled ${!r.guestStatus ? 'selected' : ''} data-lang-key="guest_status_default">${getTranslation('guest_status_default')}</option>
+                                <option value="in" ${r.guestStatus === 'in' ? 'selected' : ''} data-lang-key="guest_status_in">${getTranslation('guest_status_in')}</option>
+                                <option value="out" ${r.guestStatus === 'out' ? 'selected' : ''} data-lang-key="guest_status_out">${getTranslation('guest_status_out')}</option>
                             </select>
-                            ${subSelectHTML}
                         </div>
-                        <div id="action-cell-${r.id}">
-                            ${getActionBtn(r)}
+                    ` : '';
+
+                    return `
+                        <div class="room-row status-${getRoomStatusClass(r)}" id="row-${r.id}">
+                            <div class="timer-display ${getTimerClass(r)}">
+                                ${getTimerText(r)}
+                                <span class="badge">${getBadgeText(r)}</span>
+                            </div>
+                            <div>
+                                <input type="number" class="room-input" data-lang-placeholder="input_placeholder" placeholder="${getTranslation('input_placeholder')}"
+                                    value="${r.num}" onchange="updateRoomData(${r.id}, 'num', this.value)" 
+                                    ${r.status !== 'pending' ? 'disabled' : ''}>
+                            </div>
+                            <div>
+                                <select class="type-select" onchange="updateRoomData(${r.id}, 'type', this.value)" ${r.status !== 'pending' ? 'disabled' : ''} style="border-color:${!r.type && r.num ? 'red' : '#cfd8dc'}">
+                                    <option value="" disabled ${!r.type ? 'selected' : ''} data-lang-key="type_select_default">${getTranslation('type_select_default')}</option>
+                                    <option value="stay" ${r.type==='stay'?'selected':''} data-lang-key="type_option_stay">${getTranslation('type_option_stay')}</option>
+                                    <option value="out" ${r.type==='out'?'selected':''} data-lang-key="type_option_out">${getTranslation('type_option_out')}</option>
+                                </select>
+                                ${subSelectHTML}
+                            </div>
+                            <div id="action-cell-${r.id}">
+                                ${getActionBtn(r)}
+                            </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
+            }
         }
 
         function updateRoomData(id, field, val) {
@@ -1184,12 +1262,6 @@
             r.undoTimer = 10; // 10s rollback check
             saveState(); 
             
-            // FIX (Bug 2): Add the new empty row slot now that the current room is committed
-            workerState.rooms = workerState.rooms.filter(room => room.num !== ''); // Remove any lingering empty slots
-            workerState.rooms.push({ 
-                id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
-            });
-
             renderRooms();
             showConfirmation('toast_start_ack', { num: r.num, mode: isRainActive ? getTranslation('high_pressure') : getTranslation('normal_mode') });
         }
@@ -1238,6 +1310,12 @@
                 } else if (r.status === 'acknowledging') {
                     r.status = 'pending'; // Rollback to initial pending state
                     r.start = 0;
+                    
+                    // ⚠️ عند التراجع، إذا كان هناك صف فارغ مكرر، نحذفه
+                    const inputRoomIndex = workerState.rooms.findIndex(room => room.num === '');
+                    if (inputRoomIndex !== -1) {
+                         workerState.rooms.splice(inputRoomIndex, 1);
+                    }
                 }
                 r.undoTimer = 0;
                 saveState(); renderRooms();
@@ -1282,6 +1360,8 @@
         function tick() {
             const now = Date.now();
             let hasOverTimer = false;
+            
+            // ❌ حذفنا منطق إضافة الصف الجديد هنا، لأنه يتم الآن في renderRooms كشفاء ذاتي (Self-Healing) ❌
 
             workerState.rooms.forEach(r => {
                 if (r.undoTimer > 0) { 
@@ -1289,7 +1369,10 @@
                     const undoBtn = document.getElementById(`undo-btn-${r.id}`);
                     if(undoBtn) {
                         undoBtn.innerText = `${getTranslation('btn_undo')} (${r.undoTimer})`;
-                        if (r.undoTimer === 0) renderRooms();
+                        if (r.undoTimer === 0) {
+                            // عند انتهاء العداد، نعيد الرسم لكي يظهر صف الإدخال الجديد
+                            renderRooms();
+                        }
                     }
                 }
                 
@@ -1302,12 +1385,6 @@
                     if (r.status === 'acknowledging') {
                         timePassed = now - r.start;
                         timeRemainingMs = TRAVEL_TIME_MS - timePassed;
-                        
-                        // Fix for Bug 2: The timer logic for acknowledging
-                        if (timeRemainingMs <= 0) {
-                            acknowledgeTravel(r.id); // Auto-commit to cleaning
-                            timeRemainingMs = 0;
-                        }
                     } else {
                         const startT = r.status === 'cleaning' ? r.start : r.checkStart;
                         timePassed = now - startT;
@@ -1316,7 +1393,6 @@
                         if (timePassed > limit) hasOverTimer = true;
                     }
                     
-                    // Audio Alert Logic (Active for both acknowledging and cleaning/checking)
                     const remainingSeconds = Math.floor(timeRemainingMs / 1000);
                     if (timeRemainingMs <= 120000 && timeRemainingMs > 0) { // Last 2 minutes
                         if (remainingSeconds % 15 === 0) {
@@ -1343,16 +1419,14 @@
             
             const startT = r.status === 'acknowledging' ? r.start : (r.status === 'cleaning' ? r.start : r.checkStart);
             
-            // Handle Acknowledging Timer (15 minutes constant travel time)
             if (r.status === 'acknowledging') {
                 const diff = (r.start + TRAVEL_TIME_MS) - Date.now();
                 const mins = Math.floor(Math.abs(diff) / 60000);
                 const secs = Math.floor((Math.abs(diff) % 60000) / 1000);
-                
+                if (diff < 0) return `+${Math.abs(mins)}:${Math.abs(secs).toString().padStart(2,'0')}`;
                 return `${mins}:${secs.toString().padStart(2,'0')}`;
             }
             
-            // Handle Cleaning/Checking Timer (Performance Metric)
             const limit = r.timerLimit || (25*60000);
             const diff = limit - (Date.now() - startT);
             const mins = Math.floor(Math.abs(diff) / 60000);
@@ -1362,8 +1436,10 @@
 
         function getTimerClass(r) {
             if (r.status === 'pending') return '';
-            if (r.status === 'acknowledging') return 'timer-active'; // Use primary color for acknowledging
-            
+            if (r.status === 'acknowledging') {
+                const diff = (r.start + TRAVEL_TIME_MS) - Date.now();
+                return diff < 0 ? 'timer-danger' : 'timer-active';
+            }
             const startT = r.status === 'cleaning' ? r.start : r.checkStart;
             const limit = r.timerLimit || (25*60000); 
             return (Date.now() - startT > limit) ? 'timer-danger' : 'timer-active';
@@ -1378,7 +1454,10 @@
         }
 
         function getRoomStatusClass(r) {
-            if (r.status === 'acknowledging') return 'acknowledging';
+            if (r.status === 'acknowledging') {
+                const diff = (r.start + TRAVEL_TIME_MS) - Date.now();
+                return diff < 0 ? 'over' : 'acknowledging';
+            }
             if (r.status === 'cleaning' || r.status === 'checking_live') {
                  const startT = r.status === 'cleaning' ? r.start : r.checkStart;
                  const limit = r.timerLimit || (25*60000);
@@ -1393,9 +1472,8 @@
             activeRoomId = id;
             const r = workerState.rooms.find(x => x.id === id);
             
-            document.getElementById('modal-title-text').innerText = `${getTranslation('room_inspection')} ${r.num}`; // Dynamic part remains in Arabic/English
+            document.getElementById('modal-title-text').innerText = `${getTranslation('room_inspection')} ${r.num}`;
 
-            // Reset modal inputs and update labels using current language
             document.getElementById('modal-delay').selectedIndex = 0;
             document.getElementById('modal-notes').selectedIndex = 0;
             document.getElementById('repair-details-input').value = '';
@@ -1403,11 +1481,9 @@
             document.getElementById('modal-img-camera-input').value = ""; 
             document.getElementById('modal-img-pdf-input').value = ""; 
             
-            // Translation for dynamic labels inside modal
             document.getElementById('delay-reason-label').innerText = getTranslation('delay_reasons');
             document.getElementById('repair-details-input').placeholder = getTranslation('maintenance_details_placeholder');
 
-            // Calculate if delay reason should show
             const startT = r.status === 'cleaning' ? r.start : r.checkStart;
             const limit = r.timerLimit || (25*60000);
             const totalElapsedTime = (Date.now() - startT); 
@@ -1418,7 +1494,6 @@
 
             if (isOverTime) {
                 delaySection.style.display = 'block';
-                // Automatically select delay option if over time
                 if (delaySelect.value === getTranslation('none')) {
                     delaySelect.selectedIndex = 1; 
                 }
@@ -1440,14 +1515,13 @@
             const imageLabel = document.getElementById('image-label');
             const repairStatusSelect = document.getElementById('repair-status-select');
             
-            // Check based on the *key* (value) to ensure language independence
-            const needsMaintenance = notesSelect.value === 'تحتاج صيانة'; // Value remains same regardless of display language
+            const needsMaintenance = notesSelect.value === 'تحتاج صيانة'; 
             maintenanceFields.style.display = needsMaintenance ? 'block' : 'none';
             
             if (needsMaintenance) {
                  imageLabel.innerText = getTranslation('image_label_before');
             } else {
-                imageLabel.innerText = getTranslation('status_proof'); // Revert label
+                imageLabel.innerText = getTranslation('status_proof');
             }
             updateMaintenanceImageStatus();
         }
@@ -1470,7 +1544,6 @@
             const imgCamera = document.getElementById('modal-img-camera-input');
             const imgPdf = document.getElementById('modal-img-pdf-input');
             
-            // Check based on the *key* (value) to ensure language independence
             const isMandatory = delaySelect.value === 'الغرفة بها ملاحظات كثيرة'; 
             
             if (isMandatory) {
@@ -1484,17 +1557,16 @@
 
         function confirmFinishRoom() {
             const r = workerState.rooms.find(x => x.id === activeRoomId);
-            const delay = document.getElementById('modal-delay').value; // Actual value (e.g., 'الغرفة بها ملاحظات كثيرة')
-            const delayDisplay = document.getElementById('modal-delay').selectedOptions[0].text; // Displayed text (translated)
-            const notes = document.getElementById('modal-notes').value; // Actual value (e.g., 'تحتاج صيانة')
-            const notesDisplay = document.getElementById('modal-notes').selectedOptions[0].text; // Displayed text (translated)
+            const delay = document.getElementById('modal-delay').value; 
+            const delayDisplay = document.getElementById('modal-delay').selectedOptions[0].text; 
+            const notes = document.getElementById('modal-notes').value; 
+            const notesDisplay = document.getElementById('modal-notes').selectedOptions[0].text; 
             const startTimeStr = new Date(r.start).toLocaleTimeString(currentLang, {hour:'numeric', minute:'numeric'});
             
             const imgCamera = document.getElementById('modal-img-camera-input');
             const imgPdf = document.getElementById('modal-img-pdf-input');
             const hasImage = imgCamera.files.length > 0 || imgPdf.files.length > 0;
             
-            // Maintenance details capture
             const needsMaintenance = notes === 'تحتاج صيانة';
             let repairDetails = 'N/A';
             let repairStatus = 'N/A';
@@ -1511,42 +1583,54 @@
                 }
             }
             
-            // Mandatory image check 
             if (delay === 'الغرفة بها ملاحظات كثيرة' && !hasImage) {
                 alert(getTranslation("alert_image_mandatory"));
                 return; 
             }
             
-            // Final Log Entry
             const entry = {
                 num: r.num,
                 type: r.type === 'stay' ? 'ساكن' : 'خروج',
                 guestStatus: r.type === 'stay' ? r.guestStatus : 'N/A',
                 cleanTime: Math.ceil((r.checkStart - r.start)/60000),
                 checkTime: Math.ceil((Date.now() - r.checkStart)/60000),
-                delay: delayDisplay, // Log the translated display text
-                notes: notesDisplay, // Log the translated display text
+                delay: delayDisplay,
+                notes: notesDisplay,
                 hasImage: hasImage, 
                 repairDetails: repairDetails,
-                repairStatus: repairStatusDisplay, // Log the translated display text
+                repairStatus: repairStatusDisplay,
                 startTimeStr: startTimeStr,
-                time: new Date().toLocaleTimeString(currentLang, {hour:'numeric', minute:'numeric'})
+                time: new Date().toLocaleTimeString(currentLang, {hour:'numeric', minute:'numeric'}),
+                timestamp: Date.now() // 🔥 Timestamp for future filtering
             };
             
             workerState.log.unshift(entry);
+            // 🛡️ MEMORY PROTECTION: Keep only last 150 entries to avoid Firebase limit
+            if (workerState.log.length > 150) {
+                workerState.log = workerState.log.slice(0, 150);
+            }
+
             if(!navigator.onLine) buffer.push(entry);
             
+            // 1. إزالة الغرفة المنجزة
             workerState.rooms = workerState.rooms.filter(x => x.id !== activeRoomId);
+
+            // 2. ضمان وجود صف إدخال فارغ واحد بعد الإزالة (تجنب اختفاء الجدول)
+            const hasInputRow = workerState.rooms.some(r => r.num === '');
+            if (!hasInputRow) {
+                workerState.rooms.push({ 
+                    id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
+                });
+            }
             
             saveState(); renderRooms(); closeModal(); updateLogUI(); updateStats();
             showConfirmation('toast_room_documented', { num: entry.num });
             
-            // WhatsApp Report Logic Modified (Use specific WA keys for clear formatting)
+            // WhatsApp Report Logic
             let msg = `${getTranslation('report_title_wa', { num: entry.num })}\n`;
             msg += `${getTranslation('report_start_time_wa', { time: entry.startTimeStr })}\n`;
             msg += `----------------\n`;
 
-            // Detailed Reporting
             let detailReport = '';
             if (delay !== 'لا يوجد تأخير') {
                 detailReport += `\n${getTranslation('report_delay_reason_wa', { reason: entry.delay })}`;
@@ -1575,6 +1659,8 @@
         }
 
         // --- UTILS ---
+        const TRAVEL_TIME_MS = 15 * 60 * 1000; 
+
         function updateLogUI() {
             const list = document.getElementById('worker-log-list');
             if(workerState.log.length === 0) {
@@ -1583,7 +1669,6 @@
             }
 
             list.innerHTML = workerState.log.map((l, index) => {
-                // Check delay against the original value 'لا يوجد تأخير'
                 const isDelayed = l.delay !== getTranslation('none');
                 
                 return `
@@ -1614,20 +1699,16 @@
             const log = workerState.log;
             const totalCompleted = log.length;
             
-            // Segmentation (use original keys 'ساكن'/'خروج' for logic, not translated text)
             const countStay = log.filter(l => l.type === 'ساكن').length;
             const countOut = totalCompleted - countStay;
             
-            // Time Metrics (Clean Time + Check Time = Total Time)
             const allTotalTimes = log.map(l => l.cleanTime + l.checkTime).filter(t => t > 0);
             const cleanTimesOut = log.filter(l => l.type === 'خروج' && l.cleanTime > 0).map(l => l.cleanTime + l.checkTime);
             const cleanTimesStay = log.filter(l => l.type === 'ساكن' && l.cleanTime > 0).map(l => l.cleanTime + l.checkTime);
             
-            // Finding Fastest
             const fastestOut = cleanTimesOut.length > 0 ? cleanTimesOut.reduce((min, current) => Math.min(min, current)) : null;
             const fastestStay = cleanTimesStay.length > 0 ? cleanTimesStay.reduce((min, current) => Math.min(min, current)) : null;
             
-            // Find rooms corresponding to fastest time
             const fastestOutRoom = log.find(l => (l.cleanTime + l.checkTime) === fastestOut && l.type === 'خروج');
             const fastestStayRoom = log.find(l => (l.cleanTime + l.checkTime) === fastestStay && l.type === 'ساكن');
 
@@ -1636,22 +1717,18 @@
             const totalTimeMs = allTotalTimes.reduce((sum, time) => sum + time, 0);
             const avgTimeMs = totalCompleted > 0 ? totalTimeMs / totalCompleted : 0;
             
-            // Check delay against the translated "None" value
             const overTimerCount = log.filter(l => l.delay !== getTranslation('none')).length;
 
-            // UI Updates (Standard Stats)
             document.getElementById('stat-completed').innerText = totalCompleted;
             document.getElementById('stat-avg').innerText = formatTimeDuration(avgTimeMs);
             document.getElementById('stat-over').innerText = overTimerCount;
 
-            // UI Updates (Detailed Segmentation)
             document.getElementById('stat-out-count').innerText = countOut;
             document.getElementById('stat-stay-count').innerText = countStay;
             
             document.getElementById('stat-max-time').innerText = maxTimeMs ? formatTimeDuration(maxTimeMs) : '--';
             document.getElementById('stat-min-time').innerText = minTimeMs ? formatTimeDuration(minTimeMs) : '--';
             
-            // Fastest Room Circular Display
             if (fastestOutRoom) {
                 document.getElementById('fastest-out-num').innerText = fastestOutRoom.num;
                 document.getElementById('fastest-out-time').innerText = formatTimeDuration(fastestOut);
@@ -1680,61 +1757,93 @@
             // This function is obsolete now that the prompt modal is used.
         }
 
-        function saveState() { localStorage.setItem('abella_v6_fixed', JSON.stringify(workerState)); }
+        // 💾 NEW: Firebase Save Function - Replaces localStorage saveState()
+        // 🛡️ Added Sync Indicator Logic
+        function saveState() {
+            const indicator = document.getElementById('sync-indicator');
+            if (indicator) indicator.style.display = 'block';
+
+            const mainDocRef = db.collection(collectionName).doc('main');
+
+            const dataToSave = {
+                rooms: workerState.rooms,
+                log: workerState.log,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() // ختم الوقت
+            };
+
+            mainDocRef.set(dataToSave)
+                .then(() => {
+                    // Hide indicator after 1 second
+                    if (indicator) setTimeout(() => indicator.style.display = 'none', 1000);
+                })
+                .catch((error) => {
+                    console.error("Error saving state to Firebase:", error);
+                    if (indicator) indicator.innerText = '❌ خطأ';
+                });
+        }
+
+        // 🌐 NEW: Firebase Real-time Listener Function - Replaces localStorage loadState()
         function loadState() {
-            const d = JSON.parse(localStorage.getItem('abella_v6_fixed'));
-            if(d) { 
-                workerState.log = d.log || [];
-                
-                if (d.rooms && d.rooms.length > 0) {
-                    // Filter out old empty room placeholders and keep active rooms
-                    workerState.rooms = d.rooms.filter(r => r.status !== 'pending' && r.num !== ''); 
-                }
-                
-                const dTurbo = localStorage.getItem('abella_turbo_mode');
-                if (dTurbo) isTurboMode = (dTurbo === 'true');
-                
-                // Update Turbo Button State on load
-                const btn = document.getElementById('turbo-mode-btn');
-                if (btn) {
-                    if (isTurboMode) {
-                        btn.style.background = 'var(--danger)';
-                        btn.classList.add('btn-turbo-active');
-                        btn.innerText = getTranslation('turbo_btn_off');
-                    } else {
-                        btn.style.background = 'var(--success)';
-                        btn.classList.remove('btn-turbo-active');
-                        btn.innerText = getTranslation('turbo_btn_on');
-                    }
-                }
-                
-                // === BEGIN CRITICAL FIX FOR ROOM INPUT VISIBILITY (Consistency Fix: limit -> timerLimit) ===
-                const hasEmptyRow = workerState.rooms.some(r => r.num === '');
-                if (!hasEmptyRow) {
-                     workerState.rooms.push({ 
-                        id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
-                    });
-                }
-                // === END CRITICAL FIX IF (D) IS PRESENT ===
-            } 
+            const mainDocRef = db.collection(collectionName).doc('main');
             
-            // CRITICAL FIX: Ensure workerState.rooms is an array and has the input slot on first load 
-            if (!workerState.rooms || workerState.rooms.length === 0) {
-                 workerState.rooms = [{ 
-                    id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
-                }];
-            } else {
-                 // Double check on subsequent loads if the array was cleared by logic errors or manual reset
-                 const hasEmptyRow = workerState.rooms.some(r => r.num === '');
-                 if (!hasEmptyRow) {
-                     workerState.rooms.push({ 
+            // onSnapshot: تستمع للتحديثات اللحظية بدلاً من القراءة مرة واحدة
+            mainDocRef.onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    // تحديث workerState بالبيانات الجديدة من Firebase
+                    workerState.rooms = data.rooms || [];
+                    workerState.log = data.log || [];
+
+                    // 🔥 الإصلاح: التأكد من وجود صف إدخال فارغ واحد على الأقل
+                    let needsSave = false;
+                    const hasInputRow = workerState.rooms.some(r => r.num === '');
+                    const activeRoomsCount = workerState.rooms.filter(r => r.num !== '').length;
+                    
+                    // إذا لم يكن هناك صف إدخال ولا توجد غرف نشطة، ننشئ صف إدخال
+                    if (!hasInputRow && activeRoomsCount === 0) {
+                        workerState.rooms.push({ 
+                            id: Date.now(), 
+                            num: '', 
+                            type: '', 
+                            guestStatus: '', 
+                            status: 'pending', 
+                            start: 0, 
+                            checkStart: 0, 
+                            undoTimer: 0, 
+                            timerLimit: 0 
+                        });
+                        needsSave = true;
+                    }
+
+                    // 🔥 منع تكرار صفوف الإدخال الفارغة
+                    const inputRows = workerState.rooms.filter(r => r.num === '');
+                    if (inputRows.length > 1) {
+                        workerState.rooms = workerState.rooms.filter(r => r.num !== '');
+                        workerState.rooms.push(inputRows[0]);
+                        needsSave = true;
+                    }
+
+                    if (needsSave) {
+                        saveState();
+                    }
+
+                    // تحديث الواجهة فوراً بأي تغيير (هذه هي ميزة المزامنة اللحظية)
+                    renderRooms();
+                    updateLogUI();
+                    updateStats();
+                    // console.log("State loaded/updated successfully from Firebase.");
+                } else {
+                    console.log("No state document found in Firebase. Initializing empty state.");
+                    // 🔥 الإصلاح: يجب تهيئة workerState.rooms محليًا بصف الإدخال قبل حفظ الحالة 🔥
+                    workerState.rooms = [{ 
                         id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
-                    });
+                    }];
+                    saveState(); 
                 }
-            }
-
-
-            updateLogUI(); 
+            }, (error) => {
+                console.error("Error listening to state changes from Firebase:", error);
+                // alert('فشل الاتصال بقاعدة بيانات Firebase. تحقق من اتصالك أو إعدادات المشروع.');
+            });
         }
 
         function checkConn() {
@@ -1746,7 +1855,7 @@
             const total = workerState.log.length;
             const delayCount = workerState.log.filter(l => l.delay !== getTranslation('none')).length;
             
-            let msg = `${getTranslation('report_title_wa').replace('*تقرير نظافة غرفة رقم {num}*','*')} \n`;
+            let msg = `${getTranslation('report_title_wa', { num: 'N/A' }).replace('*تقرير نظافة غرفة رقم N/A*','*')} \n`;
             msg += `${getTranslation('report_date', { date: new Date().toLocaleDateString(currentLang) })}\n\n`;
             msg += `${getTranslation('report_completed', { total: total })}\n`;
             msg += `${getTranslation('report_delayed', { delayed: delayCount })}\n\n`;
@@ -1763,24 +1872,50 @@
             return hours >= 1 && hours < 24; 
         }
 
+        // 🗑️ NEW: Firebase Clear All Function - Replaces localStorage clearAllData()
         function clearAllData() {
-            workerState.rooms = [{ 
-                id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 // Consistency Fix
-            }];
+            const mainDocRef = db.collection(collectionName).doc('main');
             
+            // 1. Reset local state and necessary local storage items
+            workerState.rooms = [{ 
+                id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
+            }];
             workerState.log = [];
+            
             buffer = [];
             localStorage.removeItem('abella_buffer_v6'); 
-            
             isTurboMode = false;
             localStorage.removeItem('abella_turbo_mode');
 
-            saveState(); 
+            // 2. Delete the Firestore document to force a clean start for all users
+            mainDocRef.delete()
+                .then(() => {
+                    // After deletion, save the clean local state back to Firebase
+                    // This re-creates the document with the initial empty state
+                    saveState(); 
+                    
+                    // 3. Update UI locally and confirm (Real-time listener will sync across clients)
+                    renderRooms();
+                    updateStats();
+                    updateLogUI();
+                    document.getElementById('password-modal').style.display = 'none';
+                    showConfirmation("toast_data_cleared");
+                })
+                .catch((error) => {
+                    console.error("Error deleting state from Firebase:", error);
+                    alert('فشل في تصفية البيانات في Firebase. راجع الإعدادات.');
+                });
+        }
+
+        // 🗑️ UPDATE: clearLogOnly now uses saveState to sync with Firebase
+        function clearLogOnly() {
+            workerState.log = [];
+            saveState(); // Save the state with empty log to Firebase
             renderRooms();
             updateStats();
-            updateLogUI();
+            updateLogUI(); 
             document.getElementById('password-modal').style.display = 'none';
-            showConfirmation("toast_data_cleared");
+            showConfirmation("toast_log_cleared");
         }
 
         function showResetModal() {
@@ -1799,27 +1934,20 @@
         }
         
         function showLogClearModal() {
+            const statusMsg = document.getElementById('reset-status-msg');
+
             document.getElementById('password-modal').style.display = 'flex';
             document.getElementById('confirm-reset-btn').onclick = function() { checkPasswordAndReset('log_only'); };
             document.getElementById('password-modal-title').innerText = getTranslation('password_modal_title_log');
-            document.getElementById('reset-status-msg').innerHTML = getTranslation('password_msg_log');
+            statusMsg.innerHTML = getTranslation('password_msg_log');
         }
         
-        function clearLogOnly() {
-            workerState.log = [];
-            saveState();
-            renderRooms();
-            updateStats();
-            updateLogUI(); 
-            document.getElementById('password-modal').style.display = 'none';
-            showConfirmation("toast_log_cleared");
-        }
-
-
+        // 🔒 SECURE CHECK
         function checkPasswordAndReset(actionType = 'full_reset') {
             const passwordInput = document.getElementById('admin-password').value.trim();
             
-            if (passwordInput === ADMIN_PASSWORD) {
+            // Hashing Check
+            if (simpleHash(passwordInput) === ADMIN_HASH) {
                 if (actionType === 'log_only') {
                     clearLogOnly();
                 } else {
@@ -1835,144 +1963,143 @@
             document.getElementById('admin-password').value = ''; 
         }
 
+        /* =======================================
+           Translation system (New Robust System)
+           ======================================= */
 
-/* =======================================
-   Translation system (New Robust System)
-   ======================================= */
-
-// Utility to get translated string, including placeholders {key}
-function getTranslation(key, placeholders = {}) {
-    // Fallback to 'ar' if currentLang data is missing
-    const langData = TRANSLATIONS[currentLang] || TRANSLATIONS['ar'];
-    let text = langData[key] || TRANSLATIONS['ar'][key] || key; // Fallback to key itself if all fails
-    
-    // Replace placeholders
-    for (const pKey in placeholders) {
-        text = text.replace(`{${pKey}}`, placeholders[pKey]);
-    }
-    return text;
-}
-
-// Function to apply translation based on data attributes
-function applyTranslation(lang) {
-    // 1. Process standard elements using data-lang-key
-    document.querySelectorAll('[data-lang-key]').forEach(el => {
-        const key = el.getAttribute('data-lang-key');
-        const translation = getTranslation(key);
-
-        if (translation) {
-             // Special case for H1 which contains a nested SPAN with its own key
-             if(el.id === 'header-text') {
-                 // Update the main part of H1 (the node before the <br>)
-                 if (el.childNodes.length > 0 && el.firstChild.nodeType === 3) {
-                     el.firstChild.nodeValue = translation.split('<br>')[0]; // Set only the first part
-                 } else {
-                     el.textContent = translation.split('<br>')[0];
-                 }
-                 
-             } else if (el.tagName === 'SPAN' && el.parentElement.id === 'header-text') {
-                 // Update the subtitle span (which is the child of the h1)
-                 el.textContent = getTranslation('tracking_table'); // Using the dedicated key for the subtitle
-                 
-             } else if (el.tagName === 'BUTTON' || el.tagName === 'SPAN' || el.tagName === 'DIV' || el.tagName === 'P' || el.tagName === 'H3' || el.tagName === 'TITLE') {
-                el.textContent = translation;
-             } else {
-                 // Default to setting text content
-                 el.textContent = translation;
-             }
+        // Utility to get translated string, including placeholders {key}
+        function getTranslation(key, placeholders = {}) {
+            // Fallback to 'ar' if currentLang data is missing
+            const langData = TRANSLATIONS[currentLang] || TRANSLATIONS['ar'];
+            let text = langData[key] || TRANSLATIONS['ar'][key] || key; // Fallback to key itself if all fails
+            
+            // Replace placeholders
+            for (const pKey in placeholders) {
+                text = text.replace(`{${pKey}}`, placeholders[pKey]);
+            }
+            return text;
         }
-    });
 
-    // 2. Process Attributes (Placeholders, Select Options, Titles)
-    document.querySelectorAll('[data-lang-placeholder], select, input').forEach(el => {
-        // Handle Placeholder
-        const key = el.getAttribute('data-lang-placeholder');
-        if (key) {
-            el.placeholder = getTranslation(key);
+        // Function to apply translation based on data attributes
+        function applyTranslation(lang) {
+            // 1. Process standard elements using data-lang-key
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.getAttribute('data-lang-key');
+                const translation = getTranslation(key);
+
+                if (translation) {
+                     // Special case for H1 which contains a nested SPAN with its own key
+                     if(el.id === 'header-text') {
+                         // Update the main part of H1 (the node before the <br>)
+                         if (el.childNodes.length > 0 && el.firstChild.nodeType === 3) {
+                             el.firstChild.nodeValue = translation.split('<br>')[0]; // Set only the first part
+                         } else {
+                             el.textContent = translation.split('<br>')[0];
+                         }
+                         
+                     } else if (el.tagName === 'SPAN' && el.parentElement.id === 'header-text') {
+                         // Update the subtitle span (which is the child of the h1)
+                         el.textContent = getTranslation('tracking_table'); // Using the dedicated key for the subtitle
+                         
+                     } else if (el.tagName === 'BUTTON' || el.tagName === 'SPAN' || el.tagName === 'DIV' || el.tagName === 'P' || el.tagName === 'H3' || el.tagName === 'TITLE') {
+                        el.textContent = translation;
+                     } else {
+                         // Default to setting text content
+                         el.textContent = translation;
+                     }
+                }
+            });
+
+            // 2. Process Attributes (Placeholders, Select Options, Titles)
+            document.querySelectorAll('[data-lang-placeholder], select, input').forEach(el => {
+                // Handle Placeholder
+                const key = el.getAttribute('data-lang-placeholder');
+                if (key) {
+                    el.placeholder = getTranslation(key);
+                }
+                
+                // Handle Select Options (Crucial for translating dropdown options)
+                if (el.tagName === 'SELECT') {
+                     Array.from(el.options).forEach(option => {
+                         const optKey = option.getAttribute('data-lang-key');
+                         if (optKey) {
+                             option.text = getTranslation(optKey);
+                         }
+                     });
+                }
+            });
+            
+            // 3. Update dynamic/hardcoded texts that need refresh
+            document.title = getTranslation('abella_system');
+            document.getElementById('turbo-mode-btn').innerText = isTurboMode ? getTranslation('turbo_btn_off') : getTranslation('turbo_btn_on');
+            document.getElementById('report-btn-action').innerText = getTranslation('send_daily_report');
+            document.getElementById('log-none-p').innerText = getTranslation('log_none');
+            document.getElementById('dev-footer-fixed').innerText = getTranslation('developed_by');
+            document.getElementById('langBtn').innerText = getTranslation('lang_button');
+
+            // Re-render rooms to update dynamic action buttons/badges
+            renderRooms(); 
         }
-        
-        // Handle Select Options (Crucial for translating dropdown options)
-        if (el.tagName === 'SELECT') {
-             Array.from(el.options).forEach(option => {
-                 const optKey = option.getAttribute('data-lang-key');
-                 if (optKey) {
-                     option.text = getTranslation(optKey);
-                 }
-             });
+
+        // Load a language by code (ar|en|ur|bn)
+        function loadLang(lang) {
+            if (!TRANSLATIONS[lang]) {
+                console.warn(`Language data for ${lang} is missing. Falling back to Arabic.`);
+                lang = 'ar';
+            }
+            currentLang = lang;
+            
+            // CRITICAL FIX: Update HTML attributes for directionality and language
+            const html = document.documentElement;
+            html.setAttribute('lang', lang);
+            
+            // Check for RTL languages (Arabic, Urdu are RTL among the list)
+            const rtlLangs = ['ar', 'ur']; 
+            if (rtlLangs.includes(lang)) {
+                html.setAttribute('dir', 'rtl');
+            } else {
+                html.setAttribute('dir', 'ltr');
+            }
+
+            // Apply the translation
+            applyTranslation(lang);
+
+            // Save state 
+            localStorage.setItem('workerLang', lang);
         }
-    });
-    
-    // 3. Update dynamic/hardcoded texts that need refresh
-    document.title = getTranslation('abella_system');
-    document.getElementById('turbo-mode-btn').innerText = isTurboMode ? getTranslation('turbo_btn_off') : getTranslation('turbo_btn_on');
-    document.getElementById('report-btn-action').innerText = getTranslation('send_daily_report');
-    document.getElementById('log-none-p').innerText = getTranslation('log_none');
-    document.getElementById('dev-footer-fixed').innerText = getTranslation('developed_by');
-    document.getElementById('langBtn').innerText = getTranslation('lang_button');
 
-    // Re-render rooms to update dynamic action buttons/badges
-    renderRooms(); 
-}
+        // Initialize language UI
+        (function initLangUI() {
+            // Load saved lang or default ar
+            const saved = localStorage.getItem('workerLang') || 'ar';
+            // Attach dropdown handlers
+            const langBtn = document.getElementById('langBtn');
+            const langMenu = document.getElementById('langMenu');
+            if (!langBtn || !langMenu) return;
 
-// Load a language by code (ar|en|ur|bn)
-function loadLang(lang) {
-    if (!TRANSLATIONS[lang]) {
-        console.warn(`Language data for ${lang} is missing. Falling back to Arabic.`);
-        lang = 'ar';
-    }
-    currentLang = lang;
-    
-    // CRITICAL FIX: Update HTML attributes for directionality and language
-    const html = document.documentElement;
-    html.setAttribute('lang', lang);
-    
-    // Check for RTL languages (Arabic, Urdu are RTL among the list)
-    const rtlLangs = ['ar', 'ur']; 
-    if (rtlLangs.includes(lang)) {
-        html.setAttribute('dir', 'rtl');
-    } else {
-        html.setAttribute('dir', 'ltr');
-    }
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langMenu.style.display = (langMenu.style.display === 'block') ? 'none' : 'block';
+            });
 
-    // Apply the translation
-    applyTranslation(lang);
+            document.querySelectorAll('.langItem').forEach(item => {
+                item.addEventListener('click', (ev) => {
+                    const newLang = item.getAttribute('data-lang');
+                    loadLang(newLang);
+                    langMenu.style.display = 'none';
+                });
+            });
 
-    // Save state 
-    localStorage.setItem('workerLang', lang);
-}
+            // Close menu on outside click
+            document.addEventListener('click', (e) => {
+                if (!langMenu.contains(e.target) && !langBtn.contains(e.target)) {
+                    langMenu.style.display = 'none';
+                }
+            });
 
-// Initialize language UI
-(function initLangUI() {
-    // Load saved lang or default ar
-    const saved = localStorage.getItem('workerLang') || 'ar';
-    // Attach dropdown handlers
-    const langBtn = document.getElementById('langBtn');
-    const langMenu = document.getElementById('langMenu');
-    if (!langBtn || !langMenu) return;
-
-    langBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        langMenu.style.display = (langMenu.style.display === 'block') ? 'none' : 'block';
-    });
-
-    document.querySelectorAll('.langItem').forEach(item => {
-        item.addEventListener('click', (ev) => {
-            const newLang = item.getAttribute('data-lang');
-            loadLang(newLang);
-            langMenu.style.display = 'none';
-        });
-    });
-
-    // Close menu on outside click
-    document.addEventListener('click', (e) => {
-        if (!langMenu.contains(e.target) && !langBtn.contains(e.target)) {
-            langMenu.style.display = 'none';
-        }
-    });
-
-    // Load initial language
-    loadLang(saved);
-})();
+            // Load initial language
+            loadLang(saved);
+        })();
     </script>
 </body>
 </html>
