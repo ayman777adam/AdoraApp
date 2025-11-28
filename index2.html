@@ -343,8 +343,8 @@
             
             <div id="offline-indicator" class="quiet-notif" style="background:var(--danger); color:white;" data-lang-key="offline_mode">⚠️ وضع عدم الاتصال: يتم حفظ البيانات محلياً</div>
             <div id="rain-mode-indicator" class="quiet-notif" style="background:var(--upgrade); color:white;" data-lang-key="high_pressure">⚡ الوضع التيربو مفعّل</div>
-            <div id="timer-alert-bar" class="quiet-notif" data-lang-key="warn_overtime">⚠️ انتبه: يوجد غرف تجاوزت الوقت المحدد!</div>
-            <div id="sync-indicator">🔄 جاري الحفظ...</div>
+            <div id="timer-alert-bar" class="quiet-notif" style="display: none;" data-lang-key="warn_overtime">⚠️ انتبه: يوجد غرف تجاوزت الوقت المحدد!</div>
+            <div id="sync-indicator" style="display: none;">🔄 جاري الحفظ...</div>
 
             <div class="section" style="margin-bottom:15px;">
                 <div class="worker-action-row" style="margin-bottom: 0;">
@@ -399,7 +399,10 @@
             </div>
 
             <div class="section">
-                <div class="sec-title" data-lang-key="tracking_table">🚪 تتبع الغرف (جدول ذكي)</div>
+                <div class="sec-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span data-lang-key="tracking_table">🚪 تتبع الغرف (جدول ذكي)</span>
+                    <button id="add-room-btn-action-section" class="tools-btn" style="background: var(--success); color: white; font-size: 1.5rem; font-weight: bold; padding: 5px 12px;" onclick="addNewRoomInput()" data-lang-key="add_room_btn">+</button>
+                </div>
                 
                 <input type="text" id="search-bar" class="search-box" placeholder="🔍 بحث برقم الغرفة أو الحالة..." oninput="updateSearch(this.value)">
 
@@ -553,7 +556,7 @@
             'ar': {
                 'abella_system': 'نظام فندق أبيلا',
                 'staff_interface': 'واجهة العمال',
-                'tracking_table': 'تتبع الغرف',
+                'tracking_table': 'تتبع الغرف (جدول ذكي)',
                 'lang_button': '🌐 اللغة ▾',
                 'lang_ar': 'عربي',
                 'lang_en': 'English',
@@ -670,7 +673,10 @@
                 'image_label_before': 'إثبات الحالة (صورة قبل):',
                 'image_label_after': 'إثبات الحالة (صورة بعد):',
                 'default_staff_interface': 'هذه واجهة الموظفين (الافتراضية).',
-                'workers': 'العمال'
+                'workers': 'العمال',
+                'add_room_btn': '+', // NEW: Button text
+                'toast_new_input': '✅ تم فتح صف إدخال جديد.', // NEW: Confirmation message
+                'alert_input_exists': '⚠️ يوجد صف إدخال نشط بالفعل.', // NEW: Alert message
             },
             'en': {
                 'abella_system': 'Abella Hotel system',
@@ -792,7 +798,10 @@
                 'image_label_before': 'Condition Proof (Before Image):',
                 'image_label_after': 'Condition Proof (After Image):',
                 'default_staff_interface': 'This is the staff interface (default).',
-                'workers': 'Workers'
+                'workers': 'Workers',
+                'add_room_btn': '+', // NEW: Button text
+                'toast_new_input': '✅ New input row opened.', // NEW: Confirmation message
+                'alert_input_exists': '⚠️ An active input row already exists.', // NEW: Alert message
             },
             'ur': { // --------------------- Urdu Data (lang-ur.json) ---------------------
                 'abella_system': 'ابیلا ہوٹل سسٹم',
@@ -894,11 +903,10 @@
                 'password_modal_title_log': 'مکمل شدہ لاگ صرف ختم کریں',
                 'password_msg_allow': '⚠️ صبح 1:00 بجے کے بعد. دن ختم کرنے کے لیے ایڈمن پاس ورڈ درج کریں۔',
                 'password_msg_deny': '🔒 خودکار ختم کرنے کا وقت نہیں ہوا (صبح 1:00 بجے). وقت کی پابندی کو نظرانداز کرنے کے لیے پاس ورڈ درج کریں۔',
-                'password_msg_log': 'موجودہ لاگ ختم کرنے کے لیے ایڈمن پاس ورڈ درج کریں۔',
                 'password_placeholder': 'پاس ورڈ',
                 'btn_confirm_reset': 'ختم کرنے کی تصدیق کریں',
                 'btn_confirm_log_clear': 'ختم کرنے کی تصديق کریں',
-                'toast_data_cleared': '✅ ڈیٹا کامیابی سے ختم ہو گیا اور نیا دن شروع ہو گیا ہے۔',
+                'toast_data_cleared': '✅ ڈیٹا کامیابی سے ختم ہو گیا اور نیا دن شروع ہو गया ہے۔',
                 'toast_log_cleared': '✅ آپریشن لاگ کامیابی سے ختم ہو گیا ہے۔',
                 'alert_wrong_password_allowed': '❌ غلط پاس ورڈ. صبح 1:00 بجے کے بعد درست پاس ورڈ درج کیے بغیر ختم نہیں کیا جا سکتا۔',
                 'alert_wrong_password_denied': '❌ غلط پاس ورڈ. ختم کرنے کی اجازت صرف درست پاس ورڈ کے ساتھ أو صبح 1:00 بجے کے بعد ہے۔',
@@ -914,7 +922,10 @@
                 'image_label_before': 'حالت کا ثبوت (پہلے کی تصویر):',
                 'image_label_after': 'حالت کا ثبوت (بعد کی تصویر):',
                 'default_staff_interface': 'یہ اسٹاف انٹرفیس ہے (ڈیفالٹ).',
-                'workers': 'ملازمین'
+                'workers': 'ملازمین',
+                'add_room_btn': '+', // NEW: Button text
+                'toast_new_input': '✅ نیا ان پٹ رو کھلا ہے۔', // NEW: Confirmation message
+                'alert_input_exists': '⚠️ ایک فعال ان پٹ رو پہلے سے موجود ہے۔', // NEW: Alert message
             },
             'bn': { // --------------------- Bengali Data (lang-bn.json) ---------------------
                 'abella_system': 'অ্যাবেলা হোটেল সিস্টেম',
@@ -1016,7 +1027,6 @@
                 'password_modal_title_log': 'সম্পন্ন লগ কেবল মোছা',
                 'password_msg_allow': '⚠️ ভোর ১:০০ টার পর. দিন মোছার জন্য অ্যাডমিন পাসওয়ার্ড দিন।',
                 'password_msg_deny': '🔒 স্বয়ংক্রিয় মোছার সময় হয়নি (ভোর ১:০০ টা). সময় নিষেধাজ্ঞা এড়াতে পাসওয়ার্ড দিন।',
-                'password_msg_log': 'বর্তমান লগ মোছার জন্য অ্যাডমিন পাসওয়ার্ড দিন।',
                 'password_placeholder': 'পাসওয়ার্ড',
                 'btn_confirm_reset': 'মোছা নিশ্চিত করুন',
                 'btn_confirm_log_clear': 'মোছা নিশ্চিত করুন',
@@ -1036,7 +1046,10 @@
                 'image_label_before': 'অবস্থা প্রমাণ (আগের ছবি):',
                 'image_label_after': 'অবস্থা প্রমাণ (পরের ছবি):',
                 'default_staff_interface': 'এটি স্টাফ ইন্টারফেস (ডিফল্ট).',
-                'workers': 'কর্মীরা'
+                'workers': 'কর্মীরা',
+                'add_room_btn': '+', // NEW: Button text
+                'toast_new_input': '✅ নতুন ইনপুট রো খোলা হয়েছে।', // NEW: Confirmation message
+                'alert_input_exists': '⚠️ একটি সক্রিয় ইনপুট রো আগে থেকেই রয়েছে।', // NEW: Alert message
             }
         };
         let currentLang = 'ar';
@@ -1130,6 +1143,18 @@
             renderRooms();
         }
 
+        // --- NEW: Function to manually add an empty room input (as requested) ---
+        function addNewRoomInput() {
+            // 💡 FIX: Removed check for existing empty rows to allow fast multi-input workflow.
+            
+            workerState.rooms.push({
+                id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0
+            });
+            saveState();
+            renderRooms();
+            showConfirmation('toast_new_input');
+        }
+
         function renderRooms() {
             const container = document.getElementById('rooms-container');
             
@@ -1140,33 +1165,11 @@
 
             let displayOrder = [];
             
-            // 🔍 IF SEARCHING: Show filtered results ONLY (Hide Input Row)
-            if (searchText) {
-                 displayOrder = activeRooms.filter(r => {
-                    const numMatch = r.num.toString().includes(searchText);
-                    // Simple type check (can be expanded to localized strings if needed)
-                    const typeMatch = (r.type === 'stay' && 'ساكن'.includes(searchText)) || 
-                                      (r.type === 'out' && 'خروج'.includes(searchText));
-                    return numMatch || typeMatch;
-                 });
-            } else {
-                // 🛡️ STANDARD MODE: Single Task Logic
-                // Show input row ONLY if there are NO active rooms
-                if (inputRoom && activeRooms.length === 0) {
-                    displayOrder.push(inputRoom);
-                }
-                displayOrder = displayOrder.concat(activeRooms);
-            }
+            // 🔥 FIX: Display all empty input rows first, regardless of active rooms. (to enable multi-input workflow)
+            const inputRooms = workerState.rooms.filter(r => r.num === '');
+            inputRooms.sort((a, b) => b.id - a.id); // Show newest input row first
             
-            // 🔥 Self-Healing: If empty in standard mode, create input row
-            if (!searchText && displayOrder.length === 0) {
-                const newInputRoom = { 
-                    id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
-                };
-                workerState.rooms.push(newInputRoom);
-                displayOrder.push(newInputRoom);
-                saveState();
-            }
+            displayOrder = inputRooms.concat(activeRooms);
             
             // Generate HTML for all rows
             if (displayOrder.length === 0 && searchText) {
@@ -1278,13 +1281,7 @@
             // 🔥 NEW LOGIC: Send WA Report IMMEDIATELY on successful start
             sendStartReportWA(r, isRainActive);
 
-            // 🔥 NEW LOGIC: Ensure a new empty row is created after starting an active task (Step 4)
-            const hasInputRow = workerState.rooms.some(room => room.num === '');
-            if (!hasInputRow) {
-                workerState.rooms.push({ 
-                    id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
-                });
-            }
+            // ❌ Removed automatic row creation. Now done manually via (+) button.
 
             saveState(); 
             
@@ -1337,11 +1334,7 @@
                     r.status = 'pending'; // Rollback to initial pending state
                     r.start = 0;
                     
-                    // ⚠️ عند التراجع، إذا كان هناك صف فارغ مكرر، نحذفه
-                    const inputRoomIndex = workerState.rooms.findIndex(room => room.num === '');
-                    if (inputRoomIndex !== -1) {
-                         workerState.rooms.splice(inputRoomIndex, 1);
-                    }
+                    // ❌ تم إزالة منطق الحذف التلقائي لصف الإدخال الفارغ للسماح بوجود صفوف إدخال متعددة (زر +).
                 }
                 r.undoTimer = 0;
                 saveState(); renderRooms();
@@ -1486,6 +1479,7 @@
         }
 
         function getRoomStatusClass(r) {
+            if (r.status === 'pending') return '';
             if (r.status === 'acknowledging') {
                 const diff = (r.start + TRAVEL_TIME_MS) - Date.now();
                 return diff < 0 ? 'over' : 'acknowledging';
@@ -1647,15 +1641,9 @@
             // 1. إزالة الغرفة المنجزة
             workerState.rooms = workerState.rooms.filter(x => x.id !== activeRoomId);
 
-            // 2. ضمان وجود صف إدخال فارغ واحد بعد الإزالة (تجنب اختفاء الجدول)
-            const hasInputRow = workerState.rooms.some(r => r.num === '');
-            if (!hasInputRow) {
-                workerState.rooms.push({ 
-                    id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
-                });
-            }
+            // 2. ❌ تم إزالة منطق إضافة صف الإدخال هنا. الصف النشط يُضاف فقط يدوياً أو عند التصفية (لتلبية شروط المستخدم).
             
-            saveState(); renderRooms(); closeModal(); updateLogUI(); updateStats();
+            saveState({ forceLog: true }); renderRooms(); closeModal(); updateLogUI(); updateStats();
             showConfirmation('toast_room_documented', { num: entry.num });
             
             // WhatsApp Report Logic
@@ -1797,7 +1785,7 @@
                     workerState.log[index].isRepairDone = true; // علامة جديدة للإتمام
                     workerState.log[index].repairStatus = 'Completed (تمت)'; // تحديث النص للعرض
                     
-                    saveState();   // حفظ في Firebase
+                    saveState({ forceLog: true });   // حفظ في Firebase
                     updateLogUI(); // تحديث الواجهة فوراً
                     showConfirmation('toast_room_documented', { num: workerState.log[index].num });
                 }
@@ -1873,8 +1861,9 @@
         }
 
         // 💾 NEW: Firebase Save Function - Replaces localStorage saveState()
-        // 🛡️ Added Sync Indicator Logic
-        function saveState() {
+        // (Fix A: Using merge:true and optional log field to prevent accidental log deletion)
+        function saveState(options = {}) {
+            // options: { forceLog: boolean }
             const indicator = document.getElementById('sync-indicator');
             if (indicator) indicator.style.display = 'block';
 
@@ -1882,11 +1871,18 @@
 
             const dataToSave = {
                 rooms: workerState.rooms,
-                log: workerState.log,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp() // ختم الوقت
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
+            
+            // 🛡️ Only include log if it has data OR if explicitly forced (e.g., after log clear or room finish)
+            const shouldIncludeLog = Array.isArray(workerState.log) && workerState.log.length > 0;
+            
+            if (shouldIncludeLog || options.forceLog) {
+                dataToSave.log = workerState.log;
+            }
 
-            mainDocRef.set(dataToSave)
+            // Use { merge: true } to prevent deletion of fields not present in dataToSave (like log if it's empty)
+            mainDocRef.set(dataToSave, { merge: true })
                 .then(() => {
                     // Hide indicator after 1 second
                     if (indicator) setTimeout(() => indicator.style.display = 'none', 1000);
@@ -1909,35 +1905,22 @@
                     workerState.rooms = data.rooms || [];
                     workerState.log = data.log || [];
 
-                    // 🔥 الإصلاح: التأكد من وجود صف إدخال فارغ واحد على الأقل
+                    // 🔥 FIX: Logic to ensure exactly one empty input row exists IF needed (Conditions 1, 2)
                     let needsSave = false;
-                    const hasInputRow = workerState.rooms.some(r => r.num === '');
-                    const activeRoomsCount = workerState.rooms.filter(r => r.num !== '').length;
                     
-                    // إذا لم يكن هناك صف إدخال ولا توجد غرف نشطة، ننشئ صف إدخال
-                    if (!hasInputRow && activeRoomsCount === 0) {
+                    const activeRooms = workerState.rooms.filter(r => r.num !== '');
+                    const inputRows = workerState.rooms.filter(r => r.num === '');
+                    
+                    // 1. ❌ Removed cleanup logic to allow multiple empty rows for multi-input workflow (Fix 2).
+                    
+                    // 2. Add input row only if the list is COMPLETELY EMPTY (Conditions 1 & 2: Clear/Reset)
+                    if (activeRooms.length === 0 && inputRows.length === 0) {
                         workerState.rooms.push({ 
-                            id: Date.now(), 
-                            num: '', 
-                            type: '', 
-                            guestStatus: '', 
-                            status: 'pending', 
-                            start: 0, 
-                            checkStart: 0, 
-                            undoTimer: 0, 
-                            timerLimit: 0 
+                            id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
                         });
                         needsSave = true;
                     }
-
-                    // 🔥 منع تكرار صفوف الإدخال الفارغة
-                    const inputRows = workerState.rooms.filter(r => r.num === '');
-                    if (inputRows.length > 1) {
-                        workerState.rooms = workerState.rooms.filter(r => r.num !== '');
-                        workerState.rooms.push(inputRows[0]);
-                        needsSave = true;
-                    }
-
+                    
                     if (needsSave) {
                         saveState();
                     }
@@ -1949,11 +1932,11 @@
                     // console.log("State loaded/updated successfully from Firebase.");
                 } else {
                     console.log("No state document found in Firebase. Initializing empty state.");
-                    // 🔥 الإصلاح: يجب تهيئة workerState.rooms محليًا بصف الإدخال قبل حفظ الحالة 🔥
+                    // 🔥 FIX: Manual initialization when no state document is found (Covers Clear/Init)
                     workerState.rooms = [{ 
                         id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
                     }];
-                    saveState(); 
+                    saveState({ forceLog: false }); 
                 }
             }, (error) => {
                 console.error("Error listening to state changes from Firebase:", error);
@@ -1992,9 +1975,11 @@
             const mainDocRef = db.collection(collectionName).doc('main');
             
             // 1. Reset local state and necessary local storage items
-            workerState.rooms = [{ 
+            workerState.rooms = []; 
+            // Add one single input row to cover condition 1 & 2
+            workerState.rooms.push({ 
                 id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
-            }];
+            });
             workerState.log = [];
             
             buffer = [];
@@ -2007,7 +1992,7 @@
                 .then(() => {
                     // After deletion, save the clean local state back to Firebase
                     // This re-creates the document with the initial empty state
-                    saveState(); 
+                    saveState({ forceLog: true }); 
                     
                     // 3. Update UI locally and confirm (Real-time listener will sync across clients)
                     renderRooms();
@@ -2025,7 +2010,7 @@
         // 🗑️ UPDATE: clearLogOnly now uses saveState to sync with Firebase
         function clearLogOnly() {
             workerState.log = [];
-            saveState(); // Save the state with empty log to Firebase
+            saveState({ forceLog: true }); // Save the state with empty log to Firebase and force the log field to persist
             renderRooms();
             updateStats();
             updateLogUI(); 
