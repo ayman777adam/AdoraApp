@@ -1035,7 +1035,7 @@
                 'status_checking_badge': 'ডকুমেন্টের জন্য প্রস্তুত',
                 'image_label_before': 'অবস্থা প্রমাণ (আগের ছবি):',
                 'image_label_after': 'অবস্থা প্রমাণ (পরের ছবি):',
-                'default_staff_interface': 'এটি স্টাফ ইন্টারফেস (ডিফল্ট)।',
+                'default_staff_interface': 'এটি স্টাফ ইন্টারফেস (ডিফল্ট).',
                 'workers': 'কর্মীরা'
             }
         };
@@ -1258,6 +1258,12 @@
             document.getElementById('rain-prompt-modal').style.display = 'none';
             const r = workerState.rooms.find(x => x.id === id);
             
+            // 🛡️ Pre-Check (Should not happen if initial check was correct, but safer)
+            if (!r.num || !r.type || (r.type === 'stay' && !r.guestStatus)) {
+                alert(getTranslation("alert_room_num_type"));
+                return;
+            }
+
             // Set limits based on selection (New: +10 minutes)
             let limitMin = 35; 
             if (r.type === 'stay') limitMin = isRainActive ? 20 : 25; // 20/25 min
@@ -1268,6 +1274,18 @@
             r.status = 'acknowledging'; // NEW: Start Acknowledging/Travel status
             r.start = Date.now();
             r.undoTimer = 10; // 10s rollback check
+            
+            // 🔥 NEW LOGIC: Send WA Report IMMEDIATELY on successful start
+            sendStartReportWA(r, isRainActive);
+
+            // 🔥 NEW LOGIC: Ensure a new empty row is created after starting an active task (Step 4)
+            const hasInputRow = workerState.rooms.some(room => room.num === '');
+            if (!hasInputRow) {
+                workerState.rooms.push({ 
+                    id: Date.now(), num: '', type: '', guestStatus: '', status: 'pending', start: 0, checkStart: 0, undoTimer: 0, timerLimit: 0 
+                });
+            }
+
             saveState(); 
             
             renderRooms();
@@ -1678,6 +1696,33 @@
                 // -------------------------------------------------------
         // 🔥 تحديث: إضافة عمود حالة الغرفة التفاعلي (صيانة/نظيفة)
         // -------------------------------------------------------
+        
+        // --- NEW: WA Report on Start Function ---
+        function sendStartReportWA(r, isRainActive) {
+            const typeDisplay = r.type === 'stay' ? getTranslation('type_option_stay') : getTranslation('type_option_out');
+            let guestStatusDisplay = 'N/A';
+            if (r.type === 'stay') {
+                guestStatusDisplay = r.guestStatus === 'in' ? getTranslation('guest_status_in') : getTranslation('guest_status_out');
+            }
+            const modeDisplay = isRainActive ? getTranslation('high_pressure') : getTranslation('normal_mode');
+
+            let msg = `*📣 إشعار بدء عمل جديد*\n`;
+            msg += `--------------------------\n`;
+            msg += `🚪 *الغرفة:* ${r.num}\n`;
+            msg += `📝 *الحالة:* ${typeDisplay}\n`;
+            
+            if (r.type === 'stay') {
+                msg += `👤 *حالة النزيل:* ${guestStatusDisplay}\n`;
+            }
+            
+            msg += `⚡ *وضع العمل:* ${modeDisplay}\n`;
+            msg += `🕒 *وقت البدء:* ${new Date().toLocaleTimeString(currentLang, {hour:'numeric', minute:'numeric'})}\n`;
+            msg += `--------------------------\n`;
+            
+            // يرجى استبدال هذا برقم الهاتف الخاص بك أو إزالته إذا كنت تستخدم واجهة wa.me/
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
 
         function updateLogUI() {
             const list = document.getElementById('worker-log-list');
@@ -2173,5 +2218,3 @@
     </script>
 </body>
 </html>
-
-}
