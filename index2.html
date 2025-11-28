@@ -1675,9 +1675,13 @@
         // --- UTILS ---
         const TRAVEL_TIME_MS = 15 * 60 * 1000; 
 
+                // -------------------------------------------------------
+        // 🔥 تحديث: إضافة عمود حالة الغرفة التفاعلي (صيانة/نظيفة)
+        // -------------------------------------------------------
+
         function updateLogUI() {
             const list = document.getElementById('worker-log-list');
-            if(workerState.log.length === 0) {
+            if (workerState.log.length === 0) {
                  list.innerHTML = `<p id="log-none-p" style="text-align:center; color:#999;">${getTranslation('log_none')}</p>`;
                  return;
             }
@@ -1685,24 +1689,76 @@
             list.innerHTML = workerState.log.map((l, index) => {
                 const isDelayed = l.delay !== getTranslation('none');
                 
+                // --- منطق حالة الغرفة (العمود الجديد) ---
+                let roomStatusHtml = '';
+                
+                // التحقق هل الغرفة بها صيانة؟ (بناءً على الملاحظات أو تفاصيل الصيانة)
+                // نعتبر الغرفة "صيانة" إذا كان فيها تفاصيل إصلاح وليست "N/A"
+                const isMaintenance = (l.repairDetails && l.repairDetails !== 'N/A') || (l.notes && l.notes.includes('صيانة'));
+                
+                if (!isMaintenance) {
+                    // ✅ حالة 1: نظيفة (أخضر)
+                    roomStatusHtml = `<span style="color:var(--success); font-weight:800; font-size:0.75rem;">✔ نظيفة</span>`;
+                } else {
+                    // هل الصيانة مكتملة؟ (سواء تم اختيارها عند الإنهاء أو تم تحديثها لاحقاً)
+                    const isCompleted = l.repairStatus && (l.repairStatus.includes('Completed') || l.repairStatus.includes('تمت') || l.isRepairDone === true);
+                    
+                    if (isCompleted) {
+                        // 🔴 حالة 3: تمت الصيانة (أحمر - حسب طلبك)
+                        roomStatusHtml = `<span style="color:var(--danger); font-weight:800; font-size:0.75rem;">🛠️ تمت الصيانة</span>`;
+                    } else {
+                        // 🔘 حالة 2: في مرحلة الصيانة (رمادي + تفاعلي)
+                        roomStatusHtml = `
+                            <span onclick="confirmRepair(${index})" 
+                                  style="color:#7f8c8d; font-weight:bold; font-size:0.75rem; cursor:pointer; text-decoration:underline; padding:4px; border-radius:4px; background:#f5f5f5;">
+                                ⏳ في مرحلة الصيانة
+                            </span>`;
+                    }
+                }
+                // -----------------------------------------
+
                 return `
-                <div style="border-bottom:1px solid #eee; padding:8px 0; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="font-weight:bold; color:var(--primary);">${l.num} <span style="font-size:0.7rem; color:#999;">(${l.type === 'ساكن' ? getTranslation('workers') : getTranslation('workers')})</span></div>
-                        <div style="font-size:0.7rem; color:#666;">${getTranslation('report_start_time_wa', { time: l.startTimeStr }).replace('🕒', '')}</div>
-                        ${l.guestStatus === 'in' ? `<span style="font-size:0.7rem; color:var(--danger)">${getTranslation('log_in_alert')}</span>` : ''}
-                    </div>
-                    <div style="text-align:left; font-size:0.75rem; display:flex; gap:10px;">
-                        ${l.hasImage ? `<button onclick="showLogImage(${index})" style="border:none; background:none; cursor:pointer; color:var(--upgrade); padding:0;">📸</button>` : ''}
-                        <div>
-                            <div>${l.cleanTime}د ${getTranslation('status_cleaning_badge')}</div>
-                            <div style="color:${isDelayed ? 'red' : '#999'};">${isDelayed ? getTranslation('delay') : getTranslation('none')}</div>
+                <div style="border-bottom:1px solid #eee; padding:10px 5px; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="flex:1;">
+                        <div style="font-weight:bold; color:var(--primary); display:flex; align-items:center; gap:5px;">
+                            ${l.num} 
+                            <span style="font-size:0.7rem; color:#999; font-weight:normal;">(${l.type})</span>
+                            ${l.guestStatus === 'in' ? `<span style="font-size:0.6rem; background:#ffebee; color:var(--danger); padding:1px 4px; border-radius:4px;">داخل</span>` : ''}
                         </div>
+                        <div style="font-size:0.7rem; color:#666;">${l.startTimeStr}</div>
+                    </div>
+
+                    <div style="flex:1; text-align:center;">
+                        ${roomStatusHtml}
+                    </div>
+
+                    <div style="text-align:left; font-size:0.75rem; min-width:70px;">
+                        <div style="font-weight:bold;">${l.cleanTime}د <span style="font-size:0.6rem; color:#aaa;">تنظيف</span></div>
+                        <div style="color:${isDelayed ? 'red' : '#999'}; font-size:0.65rem;">${isDelayed ? 'تأخير' : 'لا يوجد تأخير'}</div>
                     </div>
                 </div>
                 `;
             }).join('');
         }
+
+        // --- دالة تأكيد إتمام الصيانة ---
+        function confirmRepair(index) {
+            // نستخدم المودال الجاهز لتوحيد الشكل
+            showActionConfirm(
+                'confirm_modal_title', // العنوان (تأكيد الإجراء)
+                'هل تؤكد أن أعمال الصيانة لهذه الغرفة قد انتهت تماماً؟', // الرسالة المخصصة
+                () => {
+                    // تنفيذ التحديث عند الضغط على "نعم"
+                    workerState.log[index].isRepairDone = true; // علامة جديدة للإتمام
+                    workerState.log[index].repairStatus = 'Completed (تمت)'; // تحديث النص للعرض
+                    
+                    saveState();   // حفظ في Firebase
+                    updateLogUI(); // تحديث الواجهة فوراً
+                    showConfirmation('toast_room_documented', { num: workerState.log[index].num });
+                }
+            );
+        }
+
         
         function showLogImage(index) {
             const logEntry = workerState.log[index];
