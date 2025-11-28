@@ -10,35 +10,60 @@
         margin: 0;
         font-family: "Tajawal", sans-serif;
         background: #f7f9fa;
-        overflow: hidden; /* منع التمرير في الصفحة الرئيسية */
+        overflow: hidden;
     }
 
-    /* زر عائم ومحسن */
+    /* 🔥 التعديل: زر صغير، أخضر مشع، في الأعلى */
     #switchBtn {
         position: fixed;
-        bottom: 130px; 
-        left: 20px;    
+        top: 20px;       /* في مستوى الهيدر */
+        left: 55px;      /* بجانب أزرار التحكم الأخرى (اترك مسافة للوضع الليلي) */
         z-index: 99999;
-        padding: 12px 25px;
-        border-radius: 50px;
+        
+        padding: 6px 16px;       /* حجم صغير وأنيق */
+        border-radius: 30px;     /* كبسولة */
+        border: none;
+        
+        background: #00e676;     /* لون أخضر أونلاين فاقع */
+        color: #006064;          /* نص غامق للتباين */
+        
         font-weight: 800;
-        font-size: 1rem;
-        color: white;
-        border: 2px solid white;
+        font-size: 0.75rem;      /* خط صغير */
         cursor: pointer;
-        background: #d63031; 
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        transition: 0.3s;
+        
+        /* تأثير التوهج */
+        box-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
 
+    #switchBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 230, 118, 0.8);
+    }
+    
     #switchBtn:active {
         transform: scale(0.95);
     }
 
+    /* نقطة الحالة داخل الزر */
+    #switchBtn::before {
+        content: '';
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+        margin-left: 4px;
+    }
+
     iframe {
         width: 100%;
-        height: 100vh;       /* متصفحات قديمة */
-        height: 100dvh;      /* الحل الاحترافي للموبايل */
+        height: 100vh;
+        height: 100dvh;
         border: none;
         display: none;
     }
@@ -48,50 +73,42 @@
 
 <body>
 
-<button id="switchBtn" onclick="toggleMode()">👷 الذهاب للعمال</button>
+<button id="switchBtn" onclick="toggleMode()">الذهاب للعمال</button>
 
 <iframe id="staffFrame" src="index.html"></iframe>
 <iframe id="workerFrame" src="index2.html"></iframe>
 
 <script>
-    // 🧠 الذاكرة: استرجاع الوضع المحفوظ أو البدء بالموظفين
     let currentMode = localStorage.getItem('abella_view_mode') || 'staff';
 
     const staffFrame = document.getElementById("staffFrame");
     const workerFrame = document.getElementById("workerFrame");
     const btn = document.getElementById("switchBtn");
 
-    // دالة لتطبيق الوضع
     function applyMode(mode) {
         if (mode === "worker") {
-            // تفعيل وضع العمال
             staffFrame.style.display = "none";
             workerFrame.style.display = "block";
             
-            btn.style.background = "#00b894"; // أخضر
-            btn.innerHTML = "👨‍💼 الذهاب للموظفين";
+            // النص فقط يتغير، التصميم ثابت (أخضر أونلاين)
+            btn.innerHTML = "👨‍💼 الذهاب للموظفين"; 
             document.title = "نظام العمال - أبيلا";
         } else {
-            // تفعيل وضع الموظفين
             workerFrame.style.display = "none";
             staffFrame.style.display = "block";
             
-            btn.style.background = "#d63031"; // أحمر
             btn.innerHTML = "👷 الذهاب للعمال";
             document.title = "تقرير الإشغال - أبيلا";
         }
-        // حفظ الوضع الجديد في الذاكرة
         localStorage.setItem('abella_view_mode', mode);
         currentMode = mode;
     }
 
-    // دالة التبديل عند الضغط
     function toggleMode() {
         const newMode = (currentMode === "staff") ? "worker" : "staff";
         applyMode(newMode);
     }
 
-    // التشغيل الأولي عند فتح الصفحة
     window.onload = () => {
         applyMode(currentMode);
     };
