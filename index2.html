@@ -560,7 +560,7 @@
                 'lang_ur': 'اردو',
                 'lang_bn': 'বাংলা',
                 'dark_mode_btn': '🌙',
-                'developed_by': 'تطوير: أيمن أبو وردة',
+                'developed_by': ' 77aayy@gmail.com: أيمن أبو وردة',
                 'offline_mode': '⚠️ وضع عدم الاتصال: يتم حفظ البيانات محلياً',
                 'high_pressure': '⚡ وضع ضغط عالي مفعّل',
                 'warn_overtime': '⚠️ انتبه: بعض الغرف تجاوزت الوقت المحدد!',
@@ -682,7 +682,7 @@
                 'lang_ur': 'اردو',
                 'lang_bn': 'বাংলা',
                 'dark_mode_btn': '🌙',
-                'developed_by': 'Developed by: Ayman Abu Wardah',
+                'developed_by': 'Developed by: Ayman Abo Warda',
                 'offline_mode': '⚠️ Offline mode: Data saved locally',
                 'high_pressure': '⚡ High pressure mode active',
                 'warn_overtime': '⚠️ Warning: Some rooms have exceeded the time limit!',
@@ -1369,22 +1369,24 @@
             const now = Date.now();
             let hasOverTimer = false;
             
-            // ❌ حذفنا منطق إضافة الصف الجديد هنا، لأنه يتم الآن في renderRooms كشفاء ذاتي (Self-Healing) ❌
-
             workerState.rooms.forEach(r => {
+                // 1. إدارة عداد التراجع (Undo Timer)
                 if (r.undoTimer > 0) { 
                     r.undoTimer--; 
                     const undoBtn = document.getElementById(`undo-btn-${r.id}`);
                     if(undoBtn) {
                         undoBtn.innerText = `${getTranslation('btn_undo')} (${r.undoTimer})`;
+                        
                         if (r.undoTimer === 0) {
-                            // عند انتهاء العداد، نعيد الرسم لكي يظهر صف الإدخال الجديد
+                            // عند انتهاء العداد، نعيد الرسم
                             renderRooms();
                         }
                     }
                 }
                 
-                if (r.status === 'cleaning' || r.status === 'checking_live' || r.status === 'acknowledging') {
+                // 2. إدارة عداد الوقت للحالات النشطة
+                // لاحظ: تم إضافة 'checking' هنا بناءً على طلبك السابق لاستمرار العد
+                if (r.status === 'cleaning' || r.status === 'checking_live' || r.status === 'acknowledging' || r.status === 'checking') {
                     
                     const limit = r.timerLimit || (25*60000);
                     let timePassed;
@@ -1394,6 +1396,7 @@
                         timePassed = now - r.start;
                         timeRemainingMs = TRAVEL_TIME_MS - timePassed;
                     } else {
+                        // حساب وقت التنظيف والفحص
                         const startT = r.status === 'cleaning' ? r.start : r.checkStart;
                         timePassed = now - startT;
                         timeRemainingMs = limit - timePassed;
@@ -1401,13 +1404,15 @@
                         if (timePassed > limit) hasOverTimer = true;
                     }
                     
+                    // التنبيه الصوتي
                     const remainingSeconds = Math.floor(timeRemainingMs / 1000);
-                    if (timeRemainingMs <= 120000 && timeRemainingMs > 0) { // Last 2 minutes
+                    if (timeRemainingMs <= 120000 && timeRemainingMs > 0) { 
                         if (remainingSeconds % 15 === 0) {
                             playAlertSound();
                         }
                     }
 
+                    // تحديث العرض
                     const rowTimer = document.querySelector(`#row-${r.id} .timer-display`);
                     if(rowTimer) {
                         rowTimer.className = `timer-display ${getTimerClass(r)}`;
@@ -1421,6 +1426,7 @@
             const alertBar = document.getElementById('timer-alert-bar');
             if(alertBar) alertBar.style.display = hasOverTimer ? 'block' : 'none';
         }
+
 
         function getTimerText(r) {
             if (r.status === 'pending') return '--:--';
