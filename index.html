@@ -638,7 +638,11 @@
             const mainDocRef = db.collection(collectionName).doc('main');
             
             // Add timestamp for data integrity
-            const dataToSave = { ...s, timestamp: firebase.firestore.FieldValue.serverTimestamp() };
+            const dataToSave = { 
+                ...s, 
+                log: s.log || [], // 🔥 الحفاظ على سجل العمال (Worker Log)
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            };
 
             mainDocRef.set(dataToSave)
                 .then(() => {
@@ -663,12 +667,13 @@
                         potS: data.potS || 0, potR: data.potR || 0,
                         bkS: data.bkS || 0, bkR: data.bkR || 0,
                         recS: data.recS || 0, recR: data.recR || 0,
-                        history: data.history || []
+                        history: data.history || [],
+                        log: data.log || [] // 🔥 إضافة: قراءة سجل العمال (Worker Log)
                     };
                     updateUI();
                 } else {
                     // Initialize if empty
-                    s = { stayS:0, stayR:0, potS:0, potR:0, bkS:0, bkR:0, recS:0, recR:0, history: [] };
+                    s = { stayS:0, stayR:0, potS:0, potR:0, bkS:0, bkR:0, recS:0, recR:0, history: [], log: [] };
                     saveData();
                 }
             });
@@ -682,7 +687,7 @@
         function checkPasswordAndReset() {
             const pwd = document.getElementById('admin-password').value.trim();
             if (simpleHash(pwd) === ADMIN_HASH) {
-                s = { stayS:0, stayR:0, potS:0, potR:0, bkS:0, bkR:0, recS:0, recR:0, history: [] }; 
+                s = { stayS:0, stayR:0, potS:0, potR:0, bkS:0, bkR:0, recS:0, recR:0, history: [], log: [] }; 
                 sessionSales = 0; 
                 saveData(); 
                 updateUI();
