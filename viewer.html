@@ -13,13 +13,13 @@
         overflow: hidden;
     }
 
-    /* زر وضع التبديل */
+    /* زر التحويل */
     #switchBtn {
         position: fixed;
         top: 20px;
         left: 55px;
-        z-index: 99999999;  /* ضمان ظهوره فوق iframe */
-
+        z-index: 999999;
+        
         padding: 6px 16px;
         border-radius: 30px;
         border: none;
@@ -33,7 +33,7 @@
 
         box-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
         transition: all 0.3s;
-        position: relative;
+        position: fixed;
     }
 
     #switchBtn:hover {
@@ -44,19 +44,6 @@
         transform: scale(0.95);
     }
 
-    #switchBtn::before {
-        content: '';
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #00e676;
-        box-shadow: 0 0 5px #00e676;
-    }
-
-    /* iframes */
     iframe {
         width: 100%;
         height: 100vh;
@@ -64,25 +51,26 @@
         border: none;
         display: none;
 
-        position: relative;
-        z-index: 1;   /* حتى لا يغطي الزر */
+        position: relative !important;
+        z-index: 1 !important;
     }
 
-    /* Desktop Fix */
+    /* desktop */
     @media (min-width: 768px) {
         #switchBtn {
             top: 25px;
             left: 50%;
             transform: translateX(-50%);
-
             padding: 8px 25px;
             font-size: 0.95rem;
             box-shadow: 0 4px 15px rgba(0, 230, 118, 0.4);
         }
+    }
 
-        #switchBtn::before {
-            display: none;
-        }
+    /* عند ظهور الزر — نجعل iframe شفاف للنقر */
+    html.show-switch #staffFrame,
+    html.show-switch #workerFrame {
+        pointer-events: none !important;
     }
 </style>
 
@@ -96,6 +84,9 @@
 <iframe id="workerFrame" src="index2.html"></iframe>
 
 <script>
+    /* إجبار الصفحة على وضع الـ pointer-events none على الإطارات */
+    document.documentElement.classList.add("show-switch");
+
     let currentMode = localStorage.getItem('adora_view_mode') || 'staff';
 
     const staffFrame = document.getElementById("staffFrame");
@@ -116,6 +107,7 @@
             btn.innerHTML = "👷 لوحة العمال";
             document.title = "Adora | لوحة موظف";
         }
+
         localStorage.setItem('adora_view_mode', mode);
         currentMode = mode;
     }
