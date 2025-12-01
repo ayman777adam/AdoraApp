@@ -6,7 +6,6 @@
     <title>Adora | متابعة فريق العمل (Ayman Abo Warda - 0570707121)</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDK v8.6.8 for App and Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 
@@ -384,11 +383,9 @@
                     </div>
                     <label class="modal-label" id="lblTimeClean" style="font-weight:bold;">وقت التنظيف</label>
                     
-                    <!-- ساعة النظام الأصلية -->
                     <input type="time" id="systemTimeInput" class="system-time-input" value="12:00">
                     <div class="time-input-hint">انقر لفتح منتقي الوقت الأصلي للنظام</div>
                     
-                    <!-- النسخة القديمة (مخفية) -->
                     <div style="display:none;">
                         <div class="time-input-container" style="margin-top:5px;">
                             <div id="dateBox" class="time-part-box"><span class="time-arrow">▲</span><span id="inpDateText">اليوم</span><span class="time-arrow down">▼</span></div>
@@ -411,11 +408,9 @@
                 </div>
                 <textarea id="inpRequestDetails" rows="3" placeholder="تفاصيل الطلب..."></textarea>
                 <div id="request-schedule-container" style="display:none; margin-top:15px;">
-                    <!-- ساعة النظام الأصلية للطلبات المجدولة -->
                     <input type="time" id="systemTimeInputReq" class="system-time-input" value="12:00">
                     <div class="time-input-hint">حدد وقت الطلب المجدول</div>
                     
-                    <!-- النسخة القديمة (مخفية) -->
                     <div style="display:none;">
                         <div class="time-input-container">
                             <div id="dateBoxReq" class="time-part-box"><span class="time-arrow">▲</span><span id="inpDateTextReq">اليوم</span><span class="time-arrow down">▼</span></div>
@@ -437,11 +432,9 @@
                  <label for="inpMaintImage" class="camera-icon-btn" style="margin-top:5px; border-color:var(--maint-color); color:var(--maint-color);">📷</label>
                  <input type="file" accept="image/*" capture="environment" id="inpMaintImage" style="display:none;">
                 <div id="maint-schedule-container" style="display:none; margin-top:15px;">
-                    <!-- ساعة النظام الأصلية للصيانة المجدولة -->
                     <input type="time" id="systemTimeInputMaint" class="system-time-input" value="12:00">
                     <div class="time-input-hint">حدد وقت الصيانة المجدولة</div>
                     
-                    <!-- النسخة القديمة (مخفية) -->
                     <div style="display:none;">
                         <div class="time-input-container">
                             <div id="dateBoxMaint" class="time-part-box"><span class="time-arrow">▲</span><span id="inpDateTextMaint">اليوم</span><span class="time-arrow down">▼</span></div>
@@ -754,7 +747,8 @@
                 try {
                     await db.collection('guestRequests').add(newRequest);
                     closeAllModals();
-                    window.location.href = `https://wa.me/?text=${encodeURIComponent(`Adora | 🛎️ *طلب*\nغ: ${num}\n${details}\n${isImmediateRequest?'🔥 عاجل':fullTimeString}`)}`; return;
+                    // ✅ تصحيح: استخدام window.open
+                    window.open(`https://wa.me/?text=${encodeURIComponent(`Adora | 🛎️ *طلب*\nغ: ${num}\n${details}\n${isImmediateRequest?'🔥 عاجل':fullTimeString}`)}`, '_blank'); return;
                 } catch(e) { console.error(e); showCustomAlert("فشل إضافة الطلب.", "error"); }
 
             } else if (currentAddMode === 'maintenance') {
@@ -769,7 +763,8 @@
                  try {
                      await db.collection('activeMaintenance').add(newMaint);
                      closeAllModals();
-                     window.location.href = `https://wa.me/?text=${encodeURIComponent(`Adora | 🛠️ *صيانة*\nغ: ${num}\n${details}\n${imgUrl || ''}`)}`; return;
+                     // ✅ تصحيح: استخدام window.open
+                     window.open(`https://wa.me/?text=${encodeURIComponent(`Adora | 🛠️ *صيانة*\nغ: ${num}\n${details}\n${imgUrl || ''}`)}`, '_blank'); return;
                  } catch(e) { console.error(e); showCustomAlert("فشل إضافة الصيانة.", "error"); }
 
             } else if (currentAddMode === 'cleaning') {
@@ -793,241 +788,8 @@
                     // Firestore سيضيف ID خاص به (doc.id)
                     await db.collection('rooms').add(newRoom);
                     closeAllModals();
-                    window.location.href = `https://wa.me/?text=${encodeURIComponent(`Adora | *${type==='out'?'خروج':'ساكن'}*\nغ: ${num}`)}`;
-                } catch(e) { console.error(e); showCustomAlert("فشل إضافة الغرفة.", "error"); }
-            }
-        }
-        
-        // ====== ⚠️ تحديث: استخدام Firestore لتحديث حالة مجدولة ======
-        async function forceStartScheduled(id, type) {
-            if (!db) return;
-            try {
-                // نستخدم doc(id) لأن ID العنصر المخزن في appState هو الآن doc.id الخاص بـ Firestore
-                const updateData = { startTime: Date.now(), schedTimestamp: firebase.firestore.FieldValue.delete() };
-                
-                if(type === 'room') { 
-                    updateData.status = 'acknowledging';
-                    updateData.deadline = Date.now() + CONFIG.times.TRAVEL;
-                    updateData.undoExpiry = Date.now() + 15000;
-                    await db.collection('rooms').doc(id).update(updateData); 
-                }
-                else if(type === 'req') { 
-                    updateData.status = 'active'; 
-                    await db.collection('guestRequests').doc(id).update(updateData); 
-                }
-                else if(type === 'maint') { 
-                    updateData.status = 'active'; 
-                    await db.collection('activeMaintenance').doc(id).update(updateData); 
-                }
-            } catch(e) { console.error("Error starting scheduled item:", e); showCustomAlert("فشل بدء العملية.", "error"); }
-        }
-
-        // لا نحتاج لدالة saveData التقليدية
-        
-        // ========== ساعة أندرويد الثابتة ==========
-        function initAndroidClock() {
-            updateAndroidClock();
-            setInterval(updateAndroidClock, 1000);
-        }
-        
-        function updateAndroidClock() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
-            const milliseconds = now.getMilliseconds();
-            
-            // حساب درجات الدوران للعقارب
-            const secondDegrees = ((seconds + milliseconds / 1000) / 60) * 360;
-            const minuteDegrees = ((minutes + seconds / 60) / 60) * 360;
-            const hourDegrees = ((hours % 12 + minutes / 60) / 12) * 360;
-            
-            // تطبيق الدوران على العقارب
-            const hourHand = document.getElementById('clockHourHand');
-            const minuteHand = document.getElementById('clockMinuteHand');
-            const secondHand = document.getElementById('clockSecondHand');
-            const digitalClock = document.getElementById('clockDigital');
-            
-            if (hourHand) hourHand.style.transform = `translateX(-50%) rotate(${hourDegrees}deg)`;
-            if (minuteHand) minuteHand.style.transform = `translateX(-50%) rotate(${minuteDegrees}deg)`;
-            if (secondHand) secondHand.style.transform = `translateX(-50%) rotate(${secondDegrees}deg)`;
-            if (digitalClock) digitalClock.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        /**
-         * دالة بدء التطبيق (الآن تبدأ الاستماع لـ Firebase)
-         */
-        function initApp() {
-            // لا نحتاج لتحميل localStorage هنا
-            initFirebaseListeners(); // بدء الاستماع للبيانات من Firestore
-            initAndroidClock();
-            setInterval(() => { 
-                updateTimersDOM(); 
-                renderUndoCountdowns(); 
-                renderGuestRequestTimers(); 
-                checkScheduledItems(); 
-                updateStats(); 
-            }, 1000);
-        }
-        window.onload = initApp;
-
-        // دالة render تستدعى عند أي تحديث في onSnapshot
-        function render() { renderRooms(); renderAllLogs(); renderGuestRequests(); updateStats(); } 
-        
-        // =================================================================
-        // باقي الدوال (مع تحديث لعمليات الكتابة)
-        // =================================================================
-        
-        // ... (بقية دوال initTimeFields و changeDate و updateDateDisplays و updateTimeDisplays و changeTimeValue و togglePeriod و setupReelControl و initReels و playTickSound) ...
-        
-        function getFormattedDate() { return new Date().toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'short' }); }
-        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
-        function toggleTurboMode() { appState.turbo = !appState.turbo; document.getElementById('turbo-mode-btn').classList.toggle('turbo-active', appState.turbo); saveData(); }
-        function updateSearch() { appState.searchText = document.getElementById('search-bar').value; render(); }
-        function showLogClearModal() { pendingAction = 'clearLog'; document.getElementById('admin-password').value = ''; document.getElementById('password-modal').style.display = 'flex'; }
-        function showNewShiftModal() { pendingAction = 'newShift'; document.getElementById('admin-password').value = ''; document.getElementById('password-modal').style.display = 'flex'; }
-
-        // Core Logic (Reels, Time, Audio) - Simplified for brevity but fully functional
-        function initTimeFields() { 
-            dateOffset = 0; 
-            updateDateDisplays(); 
-            const now = new Date(); 
-            let h = now.getHours(); 
-            const m = now.getMinutes(); 
-            
-            // تعيين الوقت الحالي في حقول النظام الأصلية
-            document.getElementById('systemTimeInput').value = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-            document.getElementById('systemTimeInputReq').value = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-            document.getElementById('systemTimeInputMaint').value = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-            
-            // حفظ للتوافق مع الكود القديم
-            const period = h >= 12 ? 'PM' : 'AM'; 
-            h = h % 12; 
-            h = h ? h : 12; 
-            document.getElementById('inpHourValue').value = h; 
-            document.getElementById('inpMinuteValue').value = m; 
-            document.getElementById('inpPeriodValue').value = period; 
-            updateTimeDisplays(h, m.toString().padStart(2, '0'), period === 'PM' ? 'م' : 'ص'); 
-        }
-        
-        function changeDate(step) { dateOffset += step; if (dateOffset < 0) dateOffset = 0; updateDateDisplays(); }
-        function updateDateDisplays() { const d = new Date(); d.setDate(d.getDate() + dateOffset); let text = "اليوم"; if(dateOffset === 1) text = "غداً"; else if(dateOffset > 1) text = d.toLocaleDateString('ar-EG', {weekday:'short', day:'numeric', month:'numeric'}); ['inpDateText', 'inpDateTextReq', 'inpDateTextMaint'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = text; }); }
-        function updateTimeDisplays(h, m, p) { ['inpHour', 'inpHourReq', 'inpHourMaint'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = h; }); ['inpMinute', 'inpMinuteReq', 'inpMinuteMaint'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = m; }); ['inpPeriodText', 'inpPeriodTextReq', 'inpPeriodTextMaint'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = p; }); }
-        function changeTimeValue(type, step) { if (type === 'hour') { let val = parseInt(document.getElementById('inpHourValue').value); val += step; if (val > 12) val = 1; if (val < 1) val = 12; document.getElementById('inpHourValue').value = val; } else if (type === 'minute') { let val = parseInt(document.getElementById('inpMinuteValue').value); val += step; if (val >= 60) val = 0; if (val < 0) val = 59; document.getElementById('inpMinuteValue').value = val; } updateTimeDisplays(document.getElementById('inpHourValue').value, parseInt(document.getElementById('inpMinuteValue').value).toString().padStart(2, '0'), document.getElementById('inpPeriodValue').value === 'PM' ? 'م' : 'ص'); }
-        function togglePeriod() { let val = document.getElementById('inpPeriodValue').value; val = val === 'AM' ? 'PM' : 'AM'; document.getElementById('inpPeriodValue').value = val; updateTimeDisplays(document.getElementById('inpHourValue').value, parseInt(document.getElementById('inpMinuteValue').value).toString().padStart(2, '0'), val === 'PM' ? 'م' : 'ص'); }
-        function setupReelControl(containerId, textElementId, type, stepVal) { const container = document.getElementById(containerId); if(!container) return; let startY = 0; let isAnimating = false; container.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: false }); container.addEventListener('touchmove', (e) => { e.preventDefault(); if (isAnimating) return; const currentY = e.touches[0].clientY; const diff = startY - currentY; if (Math.abs(diff) > 35) { isAnimating = true; const direction = diff > 0 ? 1 : -1; if (navigator.vibrate) navigator.vibrate(5); playTickSound(); if (type === 'period') togglePeriod(); else if (type === 'date') changeDate(direction); else changeTimeValue(type, direction * stepVal); setTimeout(() => { isAnimating = false; startY = currentY; }, 250); } }, { passive: false }); container.onclick = () => { playTickSound(); if(type === 'period') togglePeriod(); else if(type === 'date') changeDate(1); else changeTimeValue(type, stepVal); }; }
-        function initReels() { const suffixes = ['', 'Req', 'Maint']; suffixes.forEach(s => { setupReelControl(`dateBox${s}`, `inpDateText${s}`, 'date', 1); setupReelControl(`hourBox${s}`, `inpHour${s}`, 'hour', 1); setupReelControl(`minuteBox${s}`, `inpMinute${s}`, 'minute', 1); setupReelControl(`periodBox${s}`, `inpPeriodText${s}`, 'period', 0); }); }
-        function playTickSound() { try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.frequency.value = 800; osc.type = 'triangle'; gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.03); } catch(e) {} }
-
-        // Logic Functions
-        function checkDuplicate() { const num = document.getElementById('inpRoomNum').value; const exists = appState.rooms.find(r => r.num == String(num)); const alertBox = document.getElementById('room-dup-alert'); if (exists) { alertBox.style.display = 'block'; alertBox.innerText = `⚠️ الغرفة ${num} موجودة!`; } else { alertBox.style.display = 'none'; } }
-        function toggleArchive(type) { const id = `${type}-archive-container`; const el = document.getElementById(id); appState.archiveViewLimit[type] = 5; el.style.display = el.style.display === 'block' ? 'none' : 'block'; render(); saveData(); }
-        function loadMoreArchives(type) { appState.archiveViewLimit[type] += 5; render(); saveData(); }
-
-        function openAddModal() { 
-            document.getElementById('inpRoomNum').value = ''; document.getElementById('room-dup-alert').style.display = 'none'; document.getElementById('inpRoomType').value = ''; 
-            document.getElementById('opt_out').classList.remove('selected'); document.getElementById('opt_stay').classList.remove('selected'); 
-            document.getElementById('inpSuperTurbo').checked = false; document.getElementById('inpRequestDetails').value = ''; document.getElementById('inpMaintDetails').value = ''; document.getElementById('inpMaintImage').value = '';
-            initTimeFields(); initReels(); switchAddMode('cleaning'); setRequestMode('immediate'); setMaintMode('immediate'); document.getElementById('addRoomModal').style.display = 'flex'; 
-        }
-        function switchAddMode(mode) { 
-            currentAddMode = mode; 
-            ['cleaning', 'request', 'maintenance'].forEach(m => { document.getElementById(`tab-${m}`).classList.remove('active', 'active-req', 'active-maint'); document.getElementById(`${m}-options`).style.display = 'none'; });
-            document.getElementById(`tab-${mode}`).classList.add(mode === 'request' ? 'active-req' : (mode === 'maintenance' ? 'active-maint' : 'active'));
-            document.getElementById(`${mode}-options`).style.display = 'block';
-            const titles = { cleaning: 'إضافة غرفة', request: 'طلب نزيل', maintenance: 'تسجيل صيانة' };
-            document.getElementById('modal-title-add').innerText = titles[mode];
-        }
-        function setRequestMode(mode) { isImmediateRequest = (mode === 'immediate'); const immBtn = document.getElementById('btn-req-imm'); const schBtn = document.getElementById('btn-req-sch'); const container = document.getElementById('request-schedule-container'); if (isImmediateRequest) { immBtn.style.background = 'var(--request-color)'; immBtn.style.color='white'; schBtn.style.background='var(--bg-body)'; schBtn.style.color='var(--text-main)'; container.style.display = 'none'; } else { schBtn.style.background = 'var(--request-color)'; schBtn.style.color='white'; immBtn.style.background='var(--bg-body)'; immBtn.style.color='var(--text-main)'; container.style.display = 'block'; } }
-        function setMaintMode(mode) { isImmediateMaint = (mode === 'immediate'); const immBtn = document.getElementById('btn-maint-imm'); const schBtn = document.getElementById('btn-maint-sch'); const container = document.getElementById('maint-schedule-container'); if (isImmediateMaint) { immBtn.style.background = 'var(--maint-color)'; immBtn.style.color='white'; schBtn.style.background='var(--bg-body)'; schBtn.style.color='var(--text-main)'; container.style.display = 'none'; } else { schBtn.style.background = 'var(--maint-color)'; schBtn.style.color='white'; immBtn.style.background='var(--bg-body)'; immBtn.style.color='var(--text-main)'; container.style.display = 'block'; } }
-        
-        function setRoomType(type) { document.getElementById('inpRoomType').value = type; document.getElementById('opt_out').style.background = type==='out'?'var(--primary)':'var(--bg-body)'; document.getElementById('opt_out').style.color = type==='out'?'white':'var(--text-main)'; document.getElementById('opt_stay').style.background = type==='stay'?'var(--primary)':'var(--bg-body)'; document.getElementById('opt_stay').style.color = type==='stay'?'white':'var(--text-main)'; if (type === 'out') { document.getElementById('stayOptionsCleaning').style.display = 'none'; } else { document.getElementById('stayOptionsCleaning').style.display = 'block'; } }
-        function setGuestStatus(status) { document.getElementById('inpGuestStatus').value = status; document.getElementById('gst_clean_in').style.background = status==='in'?'var(--primary)':'var(--bg-body)'; document.getElementById('gst_clean_in').style.color = status==='in'?'white':'var(--text-main)'; document.getElementById('gst_clean_out').style.background = status==='out'?'var(--primary)':'var(--bg-body)'; document.getElementById('gst_clean_out').style.color = status==='out'?'white':'var(--text-main)'; }
-
-        // ====== ⚠️ تحديث: استخدام Firestore لإضافة البيانات ======
-        async function addNewBtnAction() {
-            let num = document.getElementById('inpRoomNum').value; if (!num) { showCustomAlert('أدخل رقم الغرفة.', 'warning'); return; } num = String(num); 
-            
-            // يجب فحص duplicate باستخدام appState المحدث من onSnapshot
-            // لكن يجب الانتباه هنا، لأن ID الغرفة في Firestore هو doc.id وليس room.num
-            // نتحقق من وجود رقم الغرفة في قائمة الغرف النشطة (Rooms)
-            if (appState.rooms.find(room => room.num === num)) { showCustomAlert(`الغرفة ${num} نشطة بالفعل.`, 'error'); return; }
-            if (!db) { showCustomAlert('خطأ في الاتصال بقاعدة البيانات.', 'error'); return; }
-
-            let timeValue = '';
-            let schedTimestamp = null;
-            let timeInputId = '';
-            if (currentAddMode === 'cleaning') { timeInputId = 'systemTimeInput'; }
-            else if (currentAddMode === 'request' && !isImmediateRequest) { timeInputId = 'systemTimeInputReq'; }
-            else if (currentAddMode === 'maintenance' && !isImmediateMaint) { timeInputId = 'systemTimeInputMaint'; }
-            if (timeInputId) { timeValue = document.getElementById(timeInputId).value; }
-
-            const timeParts = timeValue.split(':');
-            const hours = parseInt(timeParts[0]);
-            const minutes = parseInt(timeParts[1]);
-            const period = hours >= 12 ? 'م' : 'ص';
-            const displayHours = hours % 12 || 12;
-            const fullTimeString = `اليوم - ${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
-            
-            const isScheduled = (currentAddMode === 'request' && !isImmediateRequest) || (currentAddMode === 'maintenance' && !isImmediateMaint) || (currentAddMode === 'cleaning' && document.getElementById('inpRoomType').value === 'stay');
-            
-            if (isScheduled) { 
-                const now = new Date(); 
-                const selected = new Date(); 
-                selected.setHours(hours, minutes, 0, 0); 
-                if (selected < new Date(now.getTime() - 60000)) { 
-                    showCustomAlert("الوقت المجدول في الماضي!", "warning"); 
-                    return; 
-                } 
-                schedTimestamp = selected.getTime(); 
-            }
-
-            if (currentAddMode === 'request') {
-                const details = document.getElementById('inpRequestDetails').value; if (!details) { showCustomAlert('اكتب الطلب.', 'warning'); return; }
-                const newRequest = { num, details, schedTime: isImmediateRequest ? "فوري" : fullTimeString, schedTimestamp, isUrgent: isImmediateRequest, startTime: Date.now(), status: isImmediateRequest ? 'active' : 'scheduled' };
-                try {
-                    await db.collection('guestRequests').add(newRequest);
-                    closeAllModals();
-                    window.location.href = `https://wa.me/?text=${encodeURIComponent(`Adora | 🛎️ *طلب*\nغ: ${num}\n${details}\n${isImmediateRequest?'🔥 عاجل':fullTimeString}`)}`; return;
-                } catch(e) { console.error(e); showCustomAlert("فشل إضافة الطلب.", "error"); }
-
-            } else if (currentAddMode === 'maintenance') {
-                 const details = document.getElementById('inpMaintDetails').value; if (!details) { showCustomAlert('اوصف العطل.', 'warning'); return; }
-                 const file = document.getElementById('inpMaintImage').files[0]; let imgUrl = null;
-                 const btn = document.getElementById('confirm-add-btn');
-
-                 if(file) { btn.innerText = 'جاري الرفع...'; btn.disabled = true; imgUrl = await uploadToImgBB(file); btn.disabled = false; if(!imgUrl) { showCustomAlert('فشل الرفع.', 'error'); return; } }
-                 
-                 const newMaint = { num, maintDesc: details, maintImg: imgUrl, schedTime: isImmediateMaint ? "فوري" : fullTimeString, schedTimestamp, startTime: Date.now(), status: isImmediateMaint ? 'active' : 'scheduled', history: [{action: 'تسجيل', time: new Date().toLocaleTimeString('en-US')}] };
-                 
-                 try {
-                     await db.collection('activeMaintenance').add(newMaint);
-                     closeAllModals();
-                     window.location.href = `https://wa.me/?text=${encodeURIComponent(`Adora | 🛠️ *صيانة*\nغ: ${num}\n${details}\n${imgUrl || ''}`)}`; return;
-                 } catch(e) { console.error(e); showCustomAlert("فشل إضافة الصيانة.", "error"); }
-
-            } else if (currentAddMode === 'cleaning') {
-                const type = document.getElementById('inpRoomType').value; const isSuper = document.getElementById('inpSuperTurbo').checked; if (!type) { showCustomAlert('اختر الحالة.', 'warning'); return; }
-                
-                const newRoom = { 
-                    num, type, 
-                    status: schedTimestamp ? 'scheduled' : 'acknowledging', 
-                    startTime: Date.now(), 
-                    deadline: Date.now() + CONFIG.times.TRAVEL, 
-                    guestStatus: type === 'stay' ? document.getElementById('inpGuestStatus').value : 'out', 
-                    undoExpiry: Date.now() + 15000, 
-                    historyLogs: [{ action: 'دخول', time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }) }], 
-                    isSuperTurbo: isSuper, 
-                    isNew: true, 
-                    schedTime: fullTimeString, 
-                    schedTimestamp 
-                };
-                
-                try {
-                    // Firestore سيضيف ID خاص به (doc.id)
-                    await db.collection('rooms').add(newRoom);
-                    closeAllModals();
-                    window.location.href = `https://wa.me/?text=${encodeURIComponent(`Adora | *${type==='out'?'خروج':'ساكن'}*\nغ: ${num}`)}`;
+                    // ✅ تصحيح: استخدام window.open
+                    window.open(`https://wa.me/?text=${encodeURIComponent(`Adora | *${type==='out'?'خروج':'ساكن'}*\nغ: ${num}`)}`, '_blank');
                 } catch(e) { console.error(e); showCustomAlert("فشل إضافة الغرفة.", "error"); }
             }
         }
@@ -1183,7 +945,8 @@
                     await db.collection('rooms').doc(activeRoomId).delete();
                     
                     closeAllModals(); 
-                    window.location.href = `https://wa.me/?text=${encodeURIComponent(`Adora | 🛠️ *عطل*\nغ: ${room.num}\n${desc}\n${imgUrl}`)}`; 
+                    // ✅ تصحيح: استخدام window.open
+                    window.open(`https://wa.me/?text=${encodeURIComponent(`Adora | 🛠️ *عطل*\nغ: ${room.num}\n${desc}\n${imgUrl}`)}`, '_blank'); 
                 } else { 
                     const logEntry = { 
                         id: Date.now(), // نستخدم ID جديد للسجل
@@ -1205,7 +968,8 @@
                     await db.collection('rooms').doc(activeRoomId).delete();
                     
                     closeAllModals(); 
-                    if (shouldSendWhatsapp) window.location.href = `https://wa.me/?text=${encodeURIComponent(`Adora | ✅ غ ${room.num} جاهزة`)}`; 
+                    // ✅ تصحيح: استخدام window.open
+                    if (shouldSendWhatsapp) window.open(`https://wa.me/?text=${encodeURIComponent(`Adora | ✅ غ ${room.num} جاهزة`)}`, '_blank'); 
                 }
             } catch(e) { 
                 console.error("Error finishing room:", e); 
@@ -1256,7 +1020,8 @@
                 await db.collection('activeMaintenance').doc(activeMaintId).delete();
 
                 closeAllModals(); 
-                window.location.href = `https://wa.me/?text=${encodeURIComponent(`Adora | ✅ صيانة منجزة\nغ: ${maint.num}\n${imgUrl}`)}`; 
+                // ✅ تصحيح: استخدام window.open
+                window.open(`https://wa.me/?text=${encodeURIComponent(`Adora | ✅ صيانة منجزة\nغ: ${maint.num}\n${imgUrl}`)}`, '_blank'); 
             } catch(e) {
                 console.error("Error completing maintenance:", e);
                 showCustomAlert("فشل إنهاء الصيانة.", "error");
@@ -1348,7 +1113,14 @@
         function closeAllModals() { document.querySelectorAll('.modal-overlay').forEach(modal => modal.style.display = 'none'); }
         function showCustomAlert(msg, type = 'info') { const modal = document.getElementById('customAlertModal'); const iconEl = document.getElementById('alertIcon'); const msgEl = document.getElementById('alertMessage'); if (type === 'success') { iconEl.innerHTML = '✅'; iconEl.style.color = 'var(--success)'; } else if (type === 'error') { iconEl.innerHTML = '❌'; iconEl.style.color = 'var(--danger)'; } else if (type === 'warning') { iconEl.innerHTML = '⚠️'; iconEl.style.color = 'var(--warning)'; } else { iconEl.innerHTML = 'ℹ️'; iconEl.style.color = 'var(--primary)'; } msgEl.innerText = msg; modal.style.display = 'flex'; }
         function closeCustomAlert() { document.getElementById('customAlertModal').style.display = 'none'; }
-        function generateDailyReport() { let msg = `Adora | 📊 *تقرير يومي*\n`; const completedReqs = appState.guestRequestsLog ? appState.guestRequestsLog.length : 0; const activeMaint = appState.activeMaintenance.length; msg += `✅ طلبات منفذة: ${completedReqs}\n🛠️ صيانة نشطة: ${activeMaint}`; window.location.href = `https://wa.me/?text=${encodeURIComponent(msg)}`; }
+        function generateDailyReport() { 
+            let msg = `Adora | 📊 *تقرير يومي*\n`; 
+            const completedReqs = appState.guestRequestsLog ? appState.guestRequestsLog.length : 0; 
+            const activeMaint = appState.activeMaintenance.length; 
+            msg += `✅ طلبات منفذة: ${completedReqs}\n🛠️ صيانة نشطة: ${activeMaint}`; 
+            // ✅ تصحيح: استخدام window.open
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank'); 
+        }
         
         async function uploadToImgBB(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const scale = 800 / Math.max(img.width, 800); canvas.width = img.width * scale; canvas.height = img.height * scale; ctx.drawImage(img, 0, 0, canvas.width, canvas.height); canvas.toBlob(function(blob) { const formData = new FormData(); formData.append('image', blob); fetch(`https://api.imgbb.com/1/upload?key=${CONFIG.imgbbKey}`, { method: 'POST', body: formData }).then(response => response.json()).then(data => resolve(data.data.url)).catch(() => resolve(null)); }, 'image/jpeg', 0.8); }; img.src = e.target.result; }; reader.readAsDataURL(file); }); }
         
