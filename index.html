@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Adora | تقرير الإشغال (Occupancy Report)</title>
+    <title>Adora | تقرير الإشغال (Adora)</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* ============================================================
@@ -707,19 +707,18 @@
                 timestamp: firebase.firestore.FieldValue.serverTimestamp() 
             };
 
-            mainDocRef.update(dataToSave) // Changed set() to update()
-                .then(() => {
-                    if (indicator) setTimeout(() => indicator.style.display = 'none', 1000);
-                })
-                .catch((error) => {
-                    // إذا لم يكن المستند موجوداً، ننشئه بـ set()
-                    if (error.code === 'not-found') {
-                         mainDocRef.set(dataToSave);
-                    }
-                    console.error("Error saving:", error);
-                    if (indicator) indicator.innerText = '❌ خطأ';
-                });
-        }
+      mainDocRef.set(dataToSave, { merge: true })
+    .then(() => {
+        if (indicator) setTimeout(() => indicator.style.display = 'none', 1000);
+    })
+    .catch((error) => {
+        console.error("Error saving:", error);
+        if (indicator) indicator.innerText = '❌ خطأ';
+    });
+}
+
+// 2. Load Data with Self-Healing
+
 
         // 2. Load Data with Self-Healing
         function loadData() {
